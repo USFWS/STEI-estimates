@@ -1,4 +1,4 @@
-#this file read the ABR triangle survey data files and outputs usable data for 
+#this file reads the ABR triangle survey data files and attemps to output usable data for 
 #  modelling distribution and abundance.
 #
 ## Erik Osnas, July 2024
@@ -8,11 +8,20 @@ library(readxl)
 
 #read in data from ABR excel files:
 # there are three time periods to read in: (1) 1999-2016, (2) 2017-2018, (3) 2019, 2021-2023
-# There are also double observer data for for 2017 - 2023, but it is unclear how these are related
+# There are also double observer data for for 2017 - 2023, but this will not be used now
 #
-#there are bird observations and transect coverage (surveyed or not) and GIS files to define transect. 
+# Data types needed are (1) bird observations, (2) transect coverage (surveyed or not),
+#  and (3) GIS files to define transects and survey area (the survey design and/or 
+#  survey effort or flight tracks). I can only find transect coverage from 1999-2016 and a 
+#  polygon shapefile of the triangle area. I cannot find any GIS file of the transects.
+#  This could be as simple as a text file of transect end points and a description of
+#  the flight path (line of latitude or great circle; these are basically equivalent 
+#  in this small area). This might also take the form of flight tracks. 
+#  
+#  For bird observations, each time period seems to be in a different format and 
+#  naming convention. This will need to be reformatted. 
 #
-#1999-2016 bird observation
+#1999-2016 bird observations
 df1 <- read_xlsx(path = "../1999_2016ABRData/STEI_obs_1999-2016.xlsx")
 #2019-2023 data
 df3 <- read_xlsx(path = "../DOSAnalysis/RawData/2023/Barrow_STEI_Survey_2019–2023_working_ForFWS.xlsx", 
@@ -25,6 +34,9 @@ df3 <- read_xlsx(path = "../DOSAnalysis/RawData/2023/Barrow_STEI_Survey_2019–2
 # 3: Expecting numeric in T2168 / R2168C20: got 'B1F'
 #mixed type in Transect, need to specify character type for Transect
 #...
+#ISSUE 1.0: non-tidy data. Multiple meaning combined into one variable (I assume).
+#  What does "B" and "F" and all other character codes mean? 
+#  Should these be split into multiple columns?
 
 #2017
 df2.1 <- read_xlsx(path = "../DOSAnalysis/RawData/2017/Barrow_STEI_2017_forCat_updated7Dec17.xlsx", 
@@ -32,11 +44,152 @@ df2.1 <- read_xlsx(path = "../DOSAnalysis/RawData/2017/Barrow_STEI_2017_forCat_u
 #2018
 df2.2 <- read_xlsx(path = "../DOSAnalysis/RawData/2018/Barrow_STEI_Survey_2018_ForCat.xlsx", 
                    sheet = "Field data")
-#load some GIS file and visualize:
+#NOTE: sheets are named differently across years
+#
+## try to combine birds into one data set:
+View(df1)
+df1 <- df1 |> rename(Lat = LatDD83, Lon = LongDD83) |>
+  filter(On_Transect == "Y", Species == "STEI") |>
+  select(Species, Year, Transect, Lat, Lon, Males, Females, Pairs, Flying) 
+#ISSUE 1.2: assuming the variable name is trying to provide GIS metadata. No CRS is found,
+#  so I will assume this is NAD83 due to the file name. This is strange because 
+#  I think GPSs use WGS84. There is essentially little practical difference, I believe. 
+#  I will assume this is EPSG:4269 
+df1geo <- st_as_sf(df1, coords=c("Lon", "Lat"), crs = 4269) 
+#plot observations
+ggplot(data = triangle) + geom_sf() + geom_sf(data = df1geo, aes(col = Transect))
+#now try df2
+View(df2.1)
+#Same ISSUE 1.2
+#ISSUE 1.3: Do character "NA"s or NA mean zero observed? I will assume so. Generally,
+#  an affirmation of a numeric zero is preferred. Here in df2.1 character "NA"s are used.
+#  But is this true for all variable? How are zeros and NAs handled by variable. 
+#  I will assume that for "Males", "Females" and "Pairs" "NA" are zeros, bit for other it is not clear.
+df2 <- df2.1 |> rename(Lat = Lat_DD83, Lon = Lon_DD83) |>
+  filter(On_Trans == "Y", Species == "STEI") |>
+  select(Species, Year, Transect, Lat, Lon, Males, Females, Pairs, Flying) |>
+  mutate(Males = as.numeric(replace(Males, Males == "NA", 0)), 
+         Females = as.numeric(replace(Females, Females == "NA", 0)), 
+         Pairs = as.numeric(replace(Pairs, Pairs == "NA", 0)))
+View(df2.2)
+#ISSUE 1.4: Now we have switched coordinate names and presumably CRS. Will assume EPSG:4326
+#ISSUE 1.3.1: Now we are using missing data NAs. I will assume these are zeros, as above.  
+tmp <- df2.2 |> rename(Lat = Lat_WGS84, Lon = Lon_WGS84) |>
+  filter(On_Trans == "Y", Position != "RR", Species == "STEI") |>
+  select(Species, Year, Transect, Lat, Lon, Males, Females, Pairs, Flying) |>
+  mutate(Males = as.numeric(replace(Males, is.na(Males), 0)), 
+         Females = as.numeric(replace(Females, is.na(Females), 0)), 
+         Pairs = as.numeric(replace(Pairs, is.na(Pairs), 0)))
+df2 <- rbind(df2, tmp)
+rm(df2.1, df2.2)
+#NOTE: How to handle flying birds. Delete or use?
+
+#Are transects with no observation of STEI missing?
+table(df2$Transect, df2$Year)
+#NOTE: Yes, need to fill in zeros
+#ISSUE 1.5: Transect in 2017-2018 is character whereas before it is numeric. Some 
+# transects have leading "D"s, which might mean "decoy transects" but it is unclear 
+# if these are different transects than normal transects. Some transects have trailing "E" or 
+# "W", which I assume indicates direction of flight. This is non-tidy data with transect 
+# indicating at least three different types of information. 
+#
+#df3
+#ISSUE 1.6: New name for Species column. Appears to have been some confusion with 
+# between decoys and real birds, where real birds were thought to be decoys. Some 
+# rules were used to derive a correction and a new Species identification column. I 
+# will use the "Species_final" column as Species and assume this is the intent.  
+tmp <- df3 |> rename(Species = Species_final, Lat = Lat_WGS84, Lon = Lon_WGS84) |>
+  filter(On_Trans == "Y", Position != "RR", Species == "STEI") |>
+  select(Species, Year, Transect, Lat, Lon, Males, Females, Pairs, Flying) |>
+#ISSUE 1.3.1 as above
+  mutate(Males = as.numeric(replace(Males, is.na(Males), 0)), 
+         Females = as.numeric(replace(Females, is.na(Females), 0)), 
+         Pairs = as.numeric(replace(Pairs, is.na(Pairs), 0)))
+df <- rbind(df1, df2, tmp) |>
+   arrange(Year, Transect)
+rm(df1, df2, df2.1, df2.2, df3, tmp)
+#finish birds data
+summary(df)
+#ISSUE 1.6.1: Evidently in 2023, "Species_final" was not used, so the "Species" 
+#  field needs to depend on year, at least I assume this is the case. But there are decoys?
+#  Was the data never checked as in previous years for "species_final" determination? Should 
+#  I assume error rates as before? I Will ignore 2023 data for now. 
+################################################################################
+#Read in 1999-2016 transect effort data
+effort <- read_xlsx(path = "../1999_2016ABRData/Transect_Coverage_1999-2016.xlsx") |>
+  pivot_longer(cols = 3:20, names_to = "Year", values_to = "Surveyed") |>
+#ISSUE 2.0: NAs in effort data instead of 0. Will assume NAs mean "not surveyed". 
+#  Usually a dichotomous factor variable would be used (e.g., 0/1, Yes/No, etc.)
+  mutate(Surveyed = replace(Surveyed, is.na(Surveyed), 0)) |>
+  arrange(Year, Transect)
+
+group_by(effort, Year) |> summarise(N = sum(Surveyed))
+# # A tibble: 18 × 2
+# Year      N
+# <chr> <dbl>
+#   1 1999     62
+# 2 2000     62
+# 3 2001     62
+# 4 2002     62
+# 5 2003     62
+# 6 2004     62
+# 7 2005     62
+# 8 2006     62
+# 9 2007     31
+# 10 2008     62
+# 11 2009     37
+# 12 2010     31
+# 13 2011     31
+# 14 2012     51
+# 15 2013     31
+# 16 2014     31
+# 17 2015     31
+# 18 2016     31
+#ISSUE 2.1: Odd, in 2012 did all transects until 41, then did every other. 
+#  in 2009, did all to 19, then did not do 20 and did every other one, then 
+#    did none after 55. How to handle this. Will need to stratify in 2012 for any 
+#    design based estimate. Not sure what to do for 2009, might stratify but model 
+#    based estimate might be best here.
+#
+#ISSUE 2.2: I cannot find any effort information for 2017-2023. Except for flight 
+#  tracks in 2019, see below. 
+################################################################################
+#load some GIS files and visualize:
 library(sf)
+#survey area
 triangle <- st_read(dsn = "../DOSAnalysis/Data/Barrow_Triangle_STEI_Aerial_SA")
 ggplot(data = triangle) + geom_sf()
+#Small GIS ISSUE 3.0: 2019 ABR report indicates an area of the Triangle to be 2757 km^2. 
+#  I calculate 
+#   > units::set_units(st_area(triangle), "km^2")
+#   2719.499 [km^2]
+#  Probably due to area calculation in different crs. Might be due to different 
+#  polygon definition. Above is provided in EPSG:26904. 
+#  When I transform to EPSG 4326 or 4269, I get 2700.73 km^2:
+#   > units::set_units(st_area(st_transform(triangle, crs = 4326)), "km^2")
+#   2700.73 [km^2]
+#   > units::set_units(st_area(st_transform(triangle, crs = 4269)), "km^2")
+#   2700.73 [km^2]
+#
 #2019 decoy tracks
 tracks19 <- st_read(dsn = "../decoy_transects_ABR_2019", 
                     layer = "Utqiagvik_STEI_2019_for_Nathan_Tracks")
 ggplot(data = triangle) + geom_sf() + geom_sf(data = tracks19, aes(col = "red"))
+ggplot(data = tracks19)+geom_sf()
+#NOTE: why the big curve?
+tmap::tmap_mode("view")
+tmap::tm_shape(tracks19) + tmap::tm_lines() + tmap::tm_basemap(server = "Esri.WorldImagery")
+#not clear why the departure from design (no airport or obvious hazard)
+
+#can we re-con struct the transects from the observations?
+tdf <- st_as_sf(df, coords = c("Lon", "Lat"), crs = 4326) |>
+  st_transform(crs=26904)
+
+tdf <- cbind(st_drop_geometry(tdf), st_coordinates(tdf)) |>
+  group_by(Transect) |> summarise(mlat = mean(X), sdLat = sd(X)) |>
+  mutate(Transect = as.numeric(Transect)) |>
+  drop_na() |>
+  arrange(Transect) 
+tdf$mlat[-55]-tdf$mlat[-1]
+#NO! maybe group by year?
+################################################################################
