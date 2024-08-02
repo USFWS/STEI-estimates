@@ -22,9 +22,9 @@ library(readxl)
 #  naming convention. This will need to be reformatted. 
 #
 #1999-2016 bird observations
-df1 <- read_xlsx(path = "../1999_2016ABRData/STEI_obs_1999-2016.xlsx")
+df1 <- read_xlsx(path = "data/STEI_obs_1999-2016.xlsx")
 #2019-2023 data
-df3 <- read_xlsx(path = "../DOSAnalysis/RawData/2023/Barrow_STEI_Survey_2019–2023_working_ForFWS.xlsx", 
+df3 <- read_xlsx(path = "data/Barrow_STEI_Survey_2019–2023_working_ForFWS.xlsx", 
                  sheet = "Field data")
 # There were 50 or more warnings (use warnings() to see the first 50)
 # > warnings()
@@ -39,10 +39,10 @@ df3 <- read_xlsx(path = "../DOSAnalysis/RawData/2023/Barrow_STEI_Survey_2019–2
 #  Should these be split into multiple columns?
 
 #2017
-df2.1 <- read_xlsx(path = "../DOSAnalysis/RawData/2017/Barrow_STEI_2017_forCat_updated7Dec17.xlsx", 
+df2.1 <- read_xlsx(path = "data/Barrow_STEI_2017_forCat_updated7Dec17.xlsx", 
                           sheet = "Observations")
 #2018
-df2.2 <- read_xlsx(path = "../DOSAnalysis/RawData/2018/Barrow_STEI_Survey_2018_ForCat.xlsx", 
+df2.2 <- read_xlsx(path = "data/Barrow_STEI_Survey_2018_ForCat.xlsx", 
                    sheet = "Field data")
 #NOTE: sheets are named differently across years
 #
@@ -55,9 +55,6 @@ df1 <- df1 |> rename(Lat = LatDD83, Lon = LongDD83) |>
 #  so I will assume this is NAD83 due to the file name. This is strange because 
 #  I think GPSs use WGS84. There is essentially little practical difference, I believe. 
 #  I will assume this is EPSG:4269 
-df1geo <- st_as_sf(df1, coords=c("Lon", "Lat"), crs = 4269) 
-#plot observations
-ggplot(data = triangle) + geom_sf() + geom_sf(data = df1geo, aes(col = Transect))
 #now try df2
 View(df2.1)
 #Same ISSUE 1.2
@@ -107,7 +104,6 @@ tmp <- df3 |> rename(Species = Species_final, Lat = Lat_WGS84, Lon = Lon_WGS84) 
          Pairs = as.numeric(replace(Pairs, is.na(Pairs), 0)))
 df <- rbind(df1, df2, tmp) |>
    arrange(Year, Transect)
-rm(df1, df2, df2.1, df2.2, df3, tmp)
 #finish birds data
 summary(df)
 #ISSUE 1.6.1: Evidently in 2023, "Species_final" was not used, so the "Species" 
@@ -116,7 +112,7 @@ summary(df)
 #  I assume error rates as before? I Will ignore 2023 data for now. 
 ################################################################################
 #Read in 1999-2016 transect effort data
-effort <- read_xlsx(path = "../1999_2016ABRData/Transect_Coverage_1999-2016.xlsx") |>
+effort <- read_xlsx(path = "data/Transect_Coverage_1999-2016.xlsx") |>
   pivot_longer(cols = 3:20, names_to = "Year", values_to = "Surveyed") |>
 #ISSUE 2.0: NAs in effort data instead of 0. Will assume NAs mean "not surveyed". 
 #  Usually a dichotomous factor variable would be used (e.g., 0/1, Yes/No, etc.)
@@ -157,8 +153,11 @@ group_by(effort, Year) |> summarise(N = sum(Surveyed))
 #load some GIS files and visualize:
 library(sf)
 #survey area
-triangle <- st_read(dsn = "../DOSAnalysis/Data/Barrow_Triangle_STEI_Aerial_SA")
-ggplot(data = triangle) + geom_sf()
+triangle <- st_read(dsn = "data/Barrow_Triangle_STEI_Aerial_SA")
+dfgeo <- st_as_sf(df, coords=c("Lon", "Lat"), crs = 4269) 
+#NOTE: need to transform to common crs, right now (above) in both 4269 and 4326, which should be amost identical
+#plot observations
+ggplot(data = triangle) + geom_sf() + geom_sf(data = dfgeo, aes(col = Transect))
 #Small GIS ISSUE 3.0: 2019 ABR report indicates an area of the Triangle to be 2757 km^2. 
 #  I calculate 
 #   > units::set_units(st_area(triangle), "km^2")
@@ -172,7 +171,7 @@ ggplot(data = triangle) + geom_sf()
 #   2700.73 [km^2]
 #
 #2019 decoy tracks
-tracks19 <- st_read(dsn = "../decoy_transects_ABR_2019", 
+tracks19 <- st_read(dsn = "data/decoy_transects_ABR_2019", 
                     layer = "Utqiagvik_STEI_2019_for_Nathan_Tracks")
 ggplot(data = triangle) + geom_sf() + geom_sf(data = tracks19, aes(col = "red"))
 ggplot(data = tracks19)+geom_sf()
@@ -182,14 +181,32 @@ tmap::tm_shape(tracks19) + tmap::tm_lines() + tmap::tm_basemap(server = "Esri.Wo
 #not clear why the departure from design (no airport or obvious hazard)
 
 #can we re-con struct the transects from the observations?
-tdf <- st_as_sf(df, coords = c("Lon", "Lat"), crs = 4326) |>
+sdf <- st_as_sf(df, coords = c("Lon", "Lat"), crs = 4326) |>
   st_transform(crs=26904)
 
-tdf <- cbind(st_drop_geometry(tdf), st_coordinates(tdf)) |>
+tdf <- cbind(st_drop_geometry(sdf), st_coordinates(sdf)) |>
   group_by(Transect) |> summarise(mlat = mean(X), sdLat = sd(X)) |>
   mutate(Transect = as.numeric(Transect)) |>
   drop_na() |>
-  arrange(Transect) 
-tdf$mlat[-55]-tdf$mlat[-1]
+  arrange(Transect) |>
+  mutate(lag1 = (lead(mlat) - mlat)/1000)
+ggplot(data = tdf) + geom_histogram(aes(x = lag1))
 #NO! maybe group by year?
+tdf <- cbind(st_drop_geometry(sdf), st_coordinates(sdf)) |>
+  group_by(Transect, Year) |> summarise(mlat = mean(X), sdLat = sd(X)) |>
+  mutate(Transect = as.numeric(Transect)) |>
+  drop_na() |>
+  arrange(Transect) |>
+  mutate(lag1 = (lead(mlat) - mlat)/1000)
+ggplot(data = tdf) + geom_histogram(aes(x = lag1))
+#No, seem like too many too far apart
+#plot by transect
+trans <- unique(sdf$Transect)
+tmp <- arrange(sdf, Transect)
+for(i in trans){
+  print(ggplot(data = triangle) + geom_sf() + 
+          geom_sf(data = filter(tmp, Transect == i)) + 
+          labs(title = paste0("Transect ", i)))
+}
+#I think I different transect numbering system was used each year (or used inconsistently) 
 ################################################################################
