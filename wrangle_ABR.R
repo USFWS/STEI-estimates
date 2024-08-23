@@ -208,5 +208,38 @@ for(i in trans){
           geom_sf(data = filter(tmp, Transect == i)) + 
           labs(title = paste0("Transect ", i)))
 }
-#I think I different transect numbering system was used each year (or used inconsistently) 
+#I think a different transect numbering system was used each year (or used inconsistently) 
 ################################################################################
+#20240823
+#After many email exchanges and one in-person meeting, got what I think are 
+# usable files from TimO at ABR
+# Let see if they work!
+# GPX file of transects with standardized names appears good, see lines in file 
+#  print_layers.R
+library(tidyverse)
+library(readxl)
+library(sf)
+library(tmap)
+#examine bird observations:
+birds <- read_xlsx(path = "data/STEI_obs_1999-2023.xlsx", sheet = "STEI Obs 1999-2023") |> 
+  rename(birds, Transect = "Standard Transect")
+effort <- read_xlsx(path = "data/STEI_obs_1999-2023.xlsx", sheet = "Years surveyed") |> 
+  pivot_longer(2:26, names_to="Year", values_to="Surveyed") |> 
+  drop_na() |>
+  arrange(Year, Transect) |>
+  mutate(Year = as.numeric(Year))
+#read and plot transects:
+trans <- st_read(dsn = "data/Barrow_STEI_standardized_transects_Aug2024.gpx", 
+                 layer = "routes") |>
+  select(Transect = name)
+ggplot(data = trans) + geom_sf()
+tmap_mode("view")
+tm_shape(trans) + tm_lines() #looks good!
+birds.sf <- st_as_sf(birds, coords = c("LongDD83", "LatDD83"), crs = 4269) |>
+  st_transform(crs = 4326)
+tm_shape(trans) + tm_lines(popup.vars = "Transect", lwd = 1) + 
+  tm_shape(birds.sf) + tm_dots(popup.vars = c("Transect", "Year"), size = 0.5)
+# tm_shape(trans) + tm_lines(popup.vars = "Transect") + 
+#   tm_shape(filter(birds.sf, Year == 2023, Unique == "Y")) + tm_dots(popup.vars = "Transect")
+#only saw 4!
+           
