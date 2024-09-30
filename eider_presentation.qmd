@@ -1,0 +1,189 @@
+---
+title: "STEI Estimates from the MBM ACP and ABR Triangle surveys"
+author: "Erik Osnas"
+date: "`r Sys.Date()`"
+format: revealjs
+---
+
+## Outline
+
+-  Study Areas
+-  General Methods
+-  Results
+
+## Study Areas
+
+```{r}
+#| warning: false
+#| message: false
+library(tidyverse)
+library(sf)
+path = "../ACP-Mapping/Data/ACP_2023/analysis_output/ACP_DesignStrata_QC.gpkg"
+acp <- st_read(dsn = path, quiet = TRUE) #|> st_union()
+path = "../ACP-Mapping/Data/ACP_2023/analysis_output/ACP_DesignTrans_QC.gpkg"
+trans.acp <- st_read(dsn = path, quiet = TRUE) |> 
+  filter(Year == 2007)
+trans <- st_read(dsn = "data/Barrow_STEI_standardized_transects_Aug2024.gpx", 
+                 layer = "routes", quiet = TRUE) |>
+  select(Transect = name) |>
+  filter(str_sub(Transect, 1, 1) == "A", row_number() > 10)
+triangle <- st_read(dsn = "data/Barrow_Triangle_STEI_Aerial_SA", quiet = TRUE)
+ggplot(data = acp) + geom_sf(lwd = 1) + geom_sf(data = trans[c(TRUE, FALSE),], col = "red") + geom_sf(data = trans.acp)
+```
+
+## Observed STEI locations
+```{r}
+#| warning: false
+#| message: false
+#need to plot bird locations
+path <- "../ACP-Mapping/Data/ACP_2023/analysis_output/Bird-QC-Obs-2024-03-21.csv"
+acp.obs <- birds <- read_csv(file = path, ) %>%
+  filter(Species == "STEI") |> 
+  st_as_sf(coords = c("Lon", "Lat"), crs = 4326) |>
+  mutate(Survey = "ACP") |>
+  select(Survey)
+abr.obs <- readxl::read_xlsx(path = "data/STEI_obs_1999-2023.xlsx", 
+                             sheet = "STEI Obs 1999-2023") |> 
+  rename(Transect = "Standard Transect") |>
+  arrange(Year, Transect) |>
+  st_as_sf(coords = c("LongDD83", "LatDD83"), crs = 4269) |>
+  st_transform(crs = 4326) |>
+  mutate(Survey = "Triangle") |>
+  select(Survey)
+df <- rbind(abr.obs, acp.obs)
+ggplot(data = acp) + geom_sf() + geom_sf(data = df, aes(col = Survey))
+
+```
+
+## Methods: Chopping up transects
+
+![](results/chopping_transects.png)
+
+## Methods: Generalized Additive Model
+
+![Smooth response](results/gam.png)
+
+## Generalized Additive Model
+
+$$Count \sim s(X, Y) + s(Year) + ... + s(Observer)$$
+
+-  ... = many other models  
+
+-  $Count$ is the number of pairs and males (flying or not flying?)  
+
+-  later during prediction this is transformed to "indicated birds"  
+
+-  uncertainty is estimated by sampling from the model posterior distribution (detection corrections can easily be incorporated during this step)  
+
+## Results
+
+-  Triangle
+  --  design v. model
+-  ACP
+-  Combined
+
+## Results: Triangle
+
+Design-based estimate
+
+:::: {.columns}
+
+::: {.column width="50%"}
+No fliers
+![](results/trianle_raw_design_ibb_year.png)
+:::
+
+::: {.column width="50%"}
+with fliers
+![](results/trianle_raw_design_ibb_year_flying.png)
+:::
+
+::::
+
+## Results: Triangle
+
+Design v. model-based estimate (with fliers)
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](results/trianle_raw_ibb_year_flying.png)
+:::
+
+::: {.column width="50%"}
+![](results/trianle_raw_design_ibb_year_flying.png)
+:::
+
+::::
+
+## Results: Triangle
+
+![](results/trianle_raw_ibb_year_flying.png)
+
+## Results: Triangle
+
+![](results/average_density_flying.png)
+
+## Results: ACP
+
+![](results/STEI-pop-2024-05-03.png)
+
+## Results: ACP
+
+![](results/STEI-map-2024-05-03.png) 
+
+## Results: ACP
+
+Zoomed to Triangle
+
+![](results/STEI_triangle.png)
+
+## Results: Triangle v. ACP
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](results/average_density_flying.png)
+:::
+
+::: {.column width="50%"}
+![](results/STEI_triangle.png)
+:::
+
+::::
+
+## Results: ACP outside Triangle
+
+![](results/acp_nodetection_notriangle.png)
+
+## Results: Combining Triangle and ACP
+
+![](results/combined_map.png)
+
+## Results: Combining Triangle and ACP
+
+![](results/combined_map_zoomed.png)
+
+## Results: Combining Triangle and ACP
+
+![](results/combined_map_cv.png)
+
+## Results: Combining Triangle and ACP
+
+![](results/combined_year_nodetection.png)
+
+## Incorporating detection
+
+Double Observer-Sightability study 2017 - 2023 using decoys
+
+-  Detection depended on distance from transect and other covariates
+-  Decoys on tundra were rarely or never detected
+-  Unconditional detection estimates were ~1/2 that of conditional
+
+## Incorporating detection
+
+![](results/sightability_prior.png)
+
+## Results: STEI in Triangle
+
+![](results/triangle_ibb_year_flying.png)

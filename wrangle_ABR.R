@@ -334,6 +334,8 @@ ggplot(data = triangle) + geom_sf() +
   geom_sf(data = tmp, col = "lightgrey", size = 1) + 
   geom_sf(data = filter(tmp, Count > 0))
 #looks good!
+#write segmentized data to file for later use
+#saveRDS(df, file = "data/segmentized_triangle_data_fliers.RDS") #not saved
 ################################################################################
 #Now fit GAM
 library(mgcv)
@@ -449,3 +451,60 @@ testUniformity(simulationOutput)
 testOutliers(simulationOutput, type = "bootstrap")
 #fit1.1 looks the best, but all seem to give similar spatial and temporal patterns
 save.image()
+###############################
+## Fit same model but with no flying birds
+rm(list = ls())
+load(".RData")
+## Make new data frame without fliers
+birds2 <- birds.sf |> cbind(st_coordinates(birds.sf)) |> st_drop_geometry() |>
+  rename(Lon = X, Lat = Y, single = Males, pairs = Pairs) |>
+  mutate(Observer = "999", Month = 6, Day = 99, Time = 999) |>
+  pivot_longer(cols = c("single", "pairs", "Females"), names_to = "Obs_Type", 
+               values_to = "Num") |>
+  filter(Obs_Type != "Females", Flying == "N") |> #REMOVE FLIERs!!!!
+  select(Species, Year, Month, Day, Time, Observer, Num, Obs_Type, Lon, Lat)
+#need to rename Area in grid
+grid2 <- rename(grid, Area = GridArea)
+df <- data.frame(NULL)
+for(y in unique(birds2$Year)){ 
+  print(paste0("Year == ", y))
+  yeffort <- filter(effort, Year == y) |>
+    left_join(trans, by = "Transect") |>
+    st_as_sf(sf_column_name="geometry", crs = st_crs(trans)) |>
+    st_transform(crs = st_crs(grid))
+  segs <- make_segments(x=grid2, y = yeffort, w = 400)
+  
+  tmp <- get_data2(x = filter(birds2, Year == y), y = segs, area = triangle, 
+                   Spp = "STEI", grid = grid2, buff = 0)
+  df <- rbind(df, tmp)
+}
+#now add zeros for 2009
+yeffort <- filter(effort, Year == 2009) |>
+  left_join(trans, by = "Transect") |>
+  st_as_sf(sf_column_name="geometry", crs = st_crs(trans)) |>
+  st_transform(crs = st_crs(grid))
+#make segments
+segs <- make_segments(x=grid2, y = yeffort, w = 400) |>
+  mutate(Length = units::drop_units(Length)/1000, 
+         Area = units::drop_units(Area)/1000000)
+cen <- st_centroid(segs) |> st_coordinates()
+tmp <- filter(birds2, Year == 2009) |>
+  mutate(Segment.Label = as.character(NA)) |>
+  right_join(st_drop_geometry(segs)) |>
+  cbind(cen) |>
+  mutate(Observer = 999, Count = 0, Year = 2009, 
+         logArea = log(Area)) |>
+  select(names(df))
+
+df <- rbind(df, tmp) |>
+  arrange(Year, Segment.Label, Sample.Label)
+#write segmentized data to file for later use
+saveRDS(df, file = "data/segmentized_triangle_data_nofliers.RDS")
+######################
+## fit model 
+library(mgcv)
+fit1.1.nofliers <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20),
+              offset = logArea, family = nb, method = "REML", data = df)
+saveRDS(fit1.1.nofliers, file = "results/fit1.1.nofliers.RDS")
+summary(fit1.1.nofliers)
+plot(fit1.1.nofliers)
