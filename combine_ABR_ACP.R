@@ -97,7 +97,7 @@ newdat <- st_centroid(grid) %>%
 preds <- predict(fit, newdata = newdat, type = "response", se.fit = TRUE,
                  exclude = "s(Observer)", newdata.guaranteed = TRUE)
 
-plotdat <- cbind(preds, grid) |
+plotdat <- cbind(preds, grid) |> st_transform(crs = 4326)
 p <- ggplot(data = plotdat) + geom_sf(aes(fill=fit), col = NA) +
   #geom_sf(data = design[-trim,], fill = NA, alpha = 1, col = "white")  +
   scale_fill_viridis_c(name = "Expected \n density") +
@@ -198,3 +198,84 @@ gg + geom_line(aes(x = Year, y = median), linetype = "dashed") +
                 label = paste0(m, " (95% CI: ", q[1], ", ", q[4], ")")))
 ggsave("results/combined_year_detection.png")
 ################################################################################
+#as above but limit spatial extent to ACP "High" and "Tesh High" strata.
+#  above posteriors are very highly skewed to large numbers of eiders
+#  this cause concern with eider experts, so trying to understand cause
+#  Is it a property of the NB model (yes) or due to the spatial predictions into 
+#    the medium and low strata (maybe partly?)
+#  Restrict predictions to the High and Tesh High strata to see effect on posterior
+fit <- readRDS(file = "results/fit.RDS")
+#make map, code from ACP-Mapping/map_GAM.R
+source("../ACP-Mapping/map_density_functions.R")
+acp <- st_read(dsn="../ACP-Mapping/Data/ACP_2023/analysis_output/ACP_DesignStrata_QC.gpkg")
+#make grid
+acp <- select_area(area = acp, select = c(1,5)) %>% #select only "High" and "Tesh High"
+  st_transform(crs=3338)
+plot(st_geometry(acp)) #correct
+grid <- st_intersection(acp, st_make_grid(x=acp, cellsize = 1000)) %>%
+  mutate(Sample.Label = row.names(.), Grid.Area = st_area(.))
+newdat <- st_centroid(grid) %>%
+  st_coordinates() %>%
+  as.data.frame() %>%
+  mutate(Observer = "HMW", logArea = 0, Year = 2013) 
+preds <- predict(fit, newdata = newdat, type = "response", se.fit = TRUE,
+                 exclude = "s(Observer)", newdata.guaranteed = TRUE)
+
+plotdat <- cbind(preds, grid) |> st_transform(crs = 4326)
+p <- ggplot(data = plotdat) + geom_sf(aes(fill=fit), col = NA) +
+  #geom_sf(data = design[-trim,], fill = NA, alpha = 1, col = "white")  +
+  scale_fill_viridis_c(name = "Expected \n density") +
+  #breaks = my_breaks, labels = my_breaks) +
+  labs(title = "STEI in 2013")
+print(p)
+ggsave("results/combined_map_High.png")
+#find posterior by year, here just with detection
+library(units)
+newdat$Area <- drop_units(set_units(grid$Grid.Area, "km^2"))
+df <- data.frame(NULL)
+for(i in 1999:2023){
+  df <- rbind(df, mutate(newdat, Year = i))
+}
+Nsamples <- 250
+s <- rbeta(Nsamples, 
+           shape1 = 0.3*( 0.3*(1-0.3)/0.0555^2 - 1), 
+           shape2 = (1 - 0.3)*( 0.3*(1-0.3)/0.0555^2 - 1))
+post <- matrix(0, Nsamples, length(unique(df$Year)))
+
+Xp <- predict(fit, type="lpmatrix", newdata=df, exclude = "s(Observer)",
+              newdata.guaranteed=TRUE)
+#sample from parameter posterior
+b <- rmvn(Nsamples, coef(fit), vcov(fit))
+for(j in 1:Nsamples ){
+  p <- exp(Xp%*%b[j,]) * as.vector(df$Area) #replicate of prediction at all points
+  post[j,] <- cbind(df, p) %>%
+    group_by(Year) %>%
+    summarize( Total = sum(2*p/s[j])) %>% #INDICTED BIRDS!!!
+    ungroup() %>%
+    select(Total) %>%
+    unlist()
+  print(j)
+}
+#summarize
+sumdf <- data.frame(Year = min(fit$model$Year):max(fit$model$Year),
+                    Mean = apply(post, 2, mean), 
+                    sd = apply(post, 2, sd), 
+                    median = apply(post, 2, median), 
+                    upper = apply(post, 2, quantile, probs = 0.975),
+                    lower = apply(post, 2, quantile, probs = 0.025))
+#plot
+gg <- ggplot(data = sumdf) + 
+  geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
+  geom_line(aes(x = Year, y = Mean)) + 
+  scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
+  ylab("Estimated Indicated Bird Index") +
+  labs(title = "Estimated breeding bird index High and Tesh High Strata (with detection)")
+print(gg)
+#find long term posterior mean and CI
+m = round(mean(apply(post[,-c(1:5)], 1, mean)), 1)
+q = round(quantile(apply(post[,-c(1:5)], 1, mean), probs=c(0.025, 0.05, 0.5, 0.975)), 1)
+gg + geom_line(aes(x = Year, y = median), linetype = "dashed") + 
+  geom_text(aes(x = 2003, y = 3000, label = "20-year mean", hjust = 0)) + 
+  geom_text(aes(x = 2003, y = 2800, hjust = 0,
+                label = paste0(m, " (95% CI: ", q[1], ", ", q[4], ")")))
+ggsave("results/combined_year_detection_High.png")

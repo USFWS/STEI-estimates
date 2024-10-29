@@ -508,3 +508,9 @@ fit1.1.nofliers <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 
 saveRDS(fit1.1.nofliers, file = "results/fit1.1.nofliers.RDS")
 summary(fit1.1.nofliers)
 plot(fit1.1.nofliers)
+##Fit a x,y only model for later use in dsims:
+df <- readRDS(file = "data/segmentized_triangle_data_nofliers.RDS") |>
+  rename(x = X, y = Y)
+fit <- gam(Count~s(x, y, bs="ds", k = 200, m=c(1,.5)),
+           offset = logArea, family = nb, method = "REML", data = df)
+saveRDS(fit, file = "results/fit.nofliers.RDS")

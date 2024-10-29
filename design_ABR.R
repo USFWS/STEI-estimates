@@ -63,7 +63,7 @@ ggplot(data = birds3, aes(x = Area, y = Num)) + geom_point() +
 #look at mean variance
 ggplot(data = design.est, aes(x = mean_Num, y = sd_Num^2)) + geom_point() + 
   geom_abline(slope = 1, intercept = 0)
-#Try a simple plot/mean estimate
+#Try a simple plot/mean estimate: assume transect are same length
 design.est <- birds3 |> 
   mutate(Area = drop_units(Area), Num = drop_units(Num)) |>
   group_by(Year) |>
@@ -83,36 +83,95 @@ ggplot(data = design.est) +
   scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
   ylab("Estimated Indicated Bird Index") +
   labs(title = "Design-based Estimated breeding bird index in Triangle (no detection)")
+#ggsave("results/trianle_raw_design_ibb_year.png")
+#try a mean density estimate: with variable length transects.
+#  from Intro to Distance Sampling, p. 79 (Buckland et al. 2001); "R3" of Fewster 2009
+design.est2 <- birds3 |> 
+  mutate(Area = drop_units(Area), Num = drop_units(Num)) |>
+  group_by(Year) |>
+  summarise(sum_Num = sum(Num), 
+            n = n(),
+            sArea = sum(Area), 
+            Total = sum_Num*TriangleArea/sArea,
+            sd_Num = sd(Num), 
+            sd_Total = (TriangleArea/sArea) * 
+              sqrt( (1 - sArea/TriangleArea) * 
+                      (sArea*sum(Area*(Num/Area - sum_Num/sArea)^2)/(n - 1) )) ) |>
+  mutate(upper = Total + 2*sd_Total, 
+         lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total))
+ggplot(data = design.est) +  
+  geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
+  geom_line(aes(x = Year, y = Total)) + 
+  geom_point(aes(x = Year, y = Total)) +
+  geom_ribbon(data = design.est2, aes(x = Year, ymin = lower, ymax = upper), 
+              fill = "purple", alpha = 0.5) + 
+  geom_line(data = design.est2, aes(x = Year, y = Total)) +
+  geom_point(data = design.est2, aes(x = Year, y = Total), col = "purple") +
+  scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
+  ylab("Estimated Indicated Bird Index") +
+  labs(title = "Design-based Estimated breeding bird index in Triangle (no detection)")
+#that's better, and both are similar: use second option for now:
+ggplot(data = design.est2) +  
+  geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
+  geom_line(aes(x = Year, y = Total)) + 
+  geom_point(aes(x = Year, y = Total)) +
+  scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
+  scale_y_continuous(limits = c(0, 400)) + 
+  ylab("Estimated Indicated Bird Index") +
+  labs(title = "Design-based Estimated breeding bird index in Triangle (no detection)")
 ggsave("results/trianle_raw_design_ibb_year.png")
-# ggplot(data = design.est, aes(x = mean_Density, y = sd_Density^2)) + geom_point() + 
-#   geom_smooth(method = "lm")
-# #compare to AKaerial estimate
-# df <- AKaerial::ACPHistoric$expanded.table |>
-#   filter(Species == "STEI") |>
-#   group_by(Year, strata) |>
-#   summarise(n = n(), Total = mean(ibbtotal.est/2), 
-#             diff_Total = max(ibbtotal.est)/2 - min(ibbtotal.est)/2, 
-#             sd_Total = sqrt(sum(var.Nib/4)/n + (diff_Total/2)^2)) |>
-#   group_by(Year) |>
-#   summarise(Total = sum(Total), sd_Total = sqrt(sum(sd_Total^2))) |> 
-#   mutate(upper = Total + 2*sd_Total, 
-#          lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total), 
-#          Type = "Total") |>
-#   select(Year, Total, upper, lower, Type)
-# ggplot(data = df) + 
-#   geom_pointrange(aes(x = Year, y = Total, ymin = lower, ymax = upper))
-# df2 <- AKaerial::ACPHistoric$combined |>
-#   filter(Species == "STEI") |> 
-#   mutate(Total = itotal/2,
-#          sd_Total = sqrt(itotal.var/4), 
-#          upper = Total + 2*sd_Total, 
-#          lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total), 
-#          Type = "Observer Mean") |>
-#   select(Year, Total, upper, lower, Type)
-# ggplot(data = df2) + 
-#   geom_pointrange(aes(x = Year, y = Total, ymin = lower, ymax = upper))
-# df <- rbind(df, df2)
-# ggplot(data = df) + 
-#   geom_pointrange(aes(x = Year, y = Total, ymin = lower, ymax = upper, col = Type), 
-#                   position = position_dodge2(width = 0.3)) 
-# table(AKaerial::ACPHistoric$output.table$Year, AKaerial::ACPHistoric$output.table$Observer)  
+#try "O2" of Fewster 2009, recommended for systematic designs with gradient in density
+#need to group into overlapping strata
+design.est3 <- birds3 |> 
+  mutate(Area = drop_units(Area), Num = drop_units(Num)) |>
+  group_by(Year) |>
+  summarise(sum_Num = sum(Num), 
+            n = n(),
+            sArea = sum(Area), 
+            Total = sum_Num*TriangleArea/sArea,
+            sd_Num = sd(Num), 
+            sd_Total = (TriangleArea/sArea) * 
+              sqrt( (1 - sArea/TriangleArea) * 
+                      (sArea*sum(Area*(Num/Area - sum_Num/sArea)^2)/(n - 1) )) ) |>
+  mutate(upper = Total + 2*sd_Total, 
+         lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total))
+################################################################################
+#add flying birds
+birds2 <- birds |> cbind(st_coordinates(birds)) |> st_drop_geometry() |>
+  rename(Lon = X, Lat = Y, single = Males, pairs = Pairs) |>
+  mutate(Observer = "999", Month = 6, Day = 99, Time = 999) |>
+  pivot_longer(cols = c("single", "pairs", "Females"), names_to = "Obs_Type", 
+               values_to = "Num") |>
+  filter(Obs_Type != "Females", On_Transect == "Y") |>
+  select(Species, Year, Month, Day, Time, Observer, Transect, Num, Obs_Type, 
+         Flying, Lon, Lat) #Did not remove flying birds!
+
+birds3 <- birds2 |>  right_join(effort) |> #right join to add zeros
+  mutate(Area = Length*set_units(0.4, "km"), 
+         Num = replace(Num, is.na(Num), 0)) |> #replace Nas with 0 observations
+  group_by(Year, Transect) |>
+  #INDICATED BIRDS!!!
+  summarise(Num = 2*set_units(sum(Num), "1"), Area = mean(Area)) |>
+  select(Year, Transect, Area, Num) 
+design.est2 <- birds3 |> 
+  mutate(Area = drop_units(Area), Num = drop_units(Num)) |>
+  group_by(Year) |>
+  summarise(sum_Num = sum(Num), 
+            n = n(),
+            sArea = sum(Area), 
+            Total = sum_Num*TriangleArea/sArea,
+            sd_Num = sd(Num), 
+            sd_Total = (TriangleArea/sArea) * 
+              sqrt( (1 - sArea/TriangleArea) * 
+                      (sArea*sum(Area*(Num/Area - sum_Num/sArea)^2)/(n - 1) )) ) |>
+  mutate(upper = Total + 2*sd_Total, 
+         lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total))
+ggplot(data = design.est2) +  
+  geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
+  geom_line(aes(x = Year, y = Total)) + 
+  geom_point(aes(x = Year, y = Total)) +
+  scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
+  scale_y_continuous(limits = c(0, 400)) + 
+  ylab("Estimated Indicated Bird Index") +
+  labs(title = "Design-based Estimated breeding bird index in Triangle (no detection)")
+ggsave("results/trianle_raw_design_ibb_year_flying.png")
