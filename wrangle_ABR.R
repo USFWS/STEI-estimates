@@ -376,6 +376,11 @@ best <- fit1.1
 appraise(best)
 draw(best, select = 1, dist = 0.02, rug = FALSE)
 tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
+#now re-fit fit2
+fit2 <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20) + 
+              ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("ds", "cr"), 
+                 m=list(c(1,.5),rep(0,0))),
+            offset = logArea, family = nb, method = "REML", data = df)
 save.image()
 df$fYear <- factor(df$Year)
 fit1.1.re <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20) + 
@@ -451,6 +456,15 @@ testUniformity(simulationOutput)
 testOutliers(simulationOutput, type = "bootstrap")
 #fit1.1 looks the best, but all seem to give similar spatial and temporal patterns
 save.image()
+#try the usual thin plate spline with second derivative penalty
+rm(list = ls())
+load(".RData")
+fit1.1.2 <- gam(Count~s(X, Y, k = 200) + s(Year, k = 20),
+                 offset = logArea, family = nb, method = "REML", data = df)
+summary(fit1.1.2)
+appraise(fit1.1.2)
+draw(fit1.1.2, select = 1, dist = 0.02, rug = FALSE)
+AIC(fit1.1, fit1.1.2) #Hum, this one is smoother but slightly worse AIC...
 ###############################
 ## Fit same model but with no flying birds
 rm(list = ls())

@@ -41,6 +41,27 @@ for(i in years){
 setwd(wd)
 #write ACP segmentized data to file:
 saveRDS(df, file = "data/segmentized_acp_data.RDS")
+#fit acp model just to have a model object of know orgin here in this project
+#we will fit a Duchon slipe and a tprs model to compare issue with posterior 
+# similation and eider density far from coast
+library(mgcv)
+library(gratia)
+df$Observer <- factor(df$Observer)
+fit.ds <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Observer, bs = "re") + 
+             s(Year, k = 14), offset = logArea, family = nb, method = "REML", 
+             data = df)
+draw(fit.ds, select = 1, dist = 0.02, rug = FALSE)
+test <- fit.ds
+test$coefficients <- rmvn(1, coef(fit.ds), vcov(fit.ds))
+draw(test, select = 1, dist = 0.02, rug = FALSE)
+#fit tp
+fit.tp <- gam(Count~s(X, Y, k = 200) + s(Observer, bs = "re") + 
+                s(Year, k = 14), offset = logArea, family = nb, method = "REML", 
+              data = df)
+draw(fit.tp, select = 1, dist = 0.02, rug = FALSE)
+test <- fit.tp
+test$coefficients <- rmvn(1, coef(fit.tp), vcov(fit.tp))
+draw(test, select = 1, dist = 0.02, rug = FALSE)
 #clear workspace
 rm(list = ls())
 ################################################################################
