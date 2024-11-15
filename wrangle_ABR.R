@@ -335,71 +335,78 @@ ggplot(data = triangle) + geom_sf() +
   geom_sf(data = filter(tmp, Count > 0))
 #looks good!
 #write segmentized data to file for later use
-#saveRDS(df, file = "data/segmentized_triangle_data_fliers.RDS") #not saved
+saveRDS(df, file = "data/segmentized_triangle_data_fliers.RDS")
 ################################################################################
 #Now fit GAM
 library(mgcv)
-fit0 <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)),
+fit0 <- gam(Count~s(X, Y, bs="tp", k = 200),
             offset = logArea, family = nb, method = "REML", data = df)
-fit1 <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 10),
+fit1 <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20),
             offset = logArea, family = nb, method = "REML", data = df)
-fit2 <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 10) + 
-              ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("ds", "cr"), 
-                 m=list(c(1,.5),rep(0,0))),
+fit2 <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
+              ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("tp", "cr")),
             offset = logArea, family = nb, method = "REML", data = df)
+# fit2.1 <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
+#               ti(X, Y, Year, k = c(50, 10), d=c(2, 1), bs = c("tp", "cr")),
+#             offset = logArea, family = nb, method = "REML", data = df)
+# summary(fit2.1)
+# AIC(fit0, fit1, fit2, fit2.1)
+# #no benefit to increasing k for fit2. Good!
 AIC(fit0, fit1, fit2)
 summary(fit0)
 summary(fit1)
 summary(fit2)
-gam.check(fit1)
+#gam.check(fit2)
 library(DHARMa)
 library(mgcViz)
 library(gratia)
-best <- fit1
+best <- fit2
 appraise(best)
-draw(best, select = 1, dist = 0.02, rug = FALSE)
+draw(best, select = 1, dist = 0.02, rug = FALSE) + 
+  theme(axis.text.x =NA, axis.text.y=NA)
 tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
-#year trend looks too smooth!
-b <- getViz(best, nsim = 50)
-ck1 <- check2D(b, x1 = "X", x2 = "Y")
-ck1 + l_gridCheck2D(gridFun = mean)
-testDispersion(best) #looks under dispersed
-simulationOutput <- simulateResiduals(fittedModel = best, n = 500)
-plot(simulationOutput)
-plotResiduals(simulationOutput)
-testZeroInflation(simulationOutput) #looks good
-#try increasing k for year trends
-fit1.1 <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20),
-                  offset = logArea, family = nb, method = "REML", data = df)
-summary(fit1.1) #looks like k was too small for year above!
-best <- fit1.1
-appraise(best)
-draw(best, select = 1, dist = 0.02, rug = FALSE)
-tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
-#now re-fit fit2
-fit2 <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20) + 
-              ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("ds", "cr"), 
-                 m=list(c(1,.5),rep(0,0))),
-            offset = logArea, family = nb, method = "REML", data = df)
-save.image()
+tryCatch(draw(best, select = 3, dist = 0.02, rug = FALSE), error = function(e) e)
+# #year trend looks too smooth!
+# b <- getViz(best, nsim = 50)
+# ck1 <- check2D(b, x1 = "X", x2 = "Y")
+# ck1 + l_gridCheck2D(gridFun = mean)
+# testDispersion(best) #looks under dispersed
+# simulationOutput <- simulateResiduals(fittedModel = best, n = 500)
+# plot(simulationOutput)
+# plotResiduals(simulationOutput)
+# testZeroInflation(simulationOutput) #looks good
+# #try increasing k for year trends
+# fit1.1 <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20),
+#                   offset = logArea, family = nb, method = "REML", data = df)
+# summary(fit1.1) #looks like k was too small for year above!
+# best <- fit1.1
+# appraise(best)
+# draw(best, select = 1, dist = 0.02, rug = FALSE)
+# tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
+# #now re-fit fit2
+# fit2 <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20) + 
+#               ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("ds", "cr"), 
+#                  m=list(c(1,.5),rep(0,0))),
+#             offset = logArea, family = nb, method = "REML", data = df)
+# save.image()
 df$fYear <- factor(df$Year)
-fit1.1.re <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20) + 
+fit1.1.re <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
                    s(fYear, bs = "re"),
               offset = logArea, family = nb, method = "REML", data = df)
-AIC(fit1.1, fit1.1.re)
+AIC(fit0, fit1, fit2, fit1.1.re)
 best <- fit1.1.re
 appraise(best)
 draw(best, select = 1, dist = 0.02, rug = FALSE)
 tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
-fit1.re <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(fYear, bs = "re"),
+fit1.re <- gam(Count~s(X, Y, bs="tp", k = 200) + s(fYear, bs = "re"),
                  offset = logArea, family = nb, method = "REML", data = df)
 best <- fit1.re
 appraise(best)
 draw(best, select = 1, dist = 0.02, rug = FALSE)
 tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
-AIC(fit0, fit1, fit2, fit1.re, fit1.1, fit1.1.re)
-summary(fit1.1) 
-best <- fit1.1
+AIC(fit0, fit1, fit2, fit1.re, fit1.1.re)
+summary(fit2) 
+best <- fit2
 appraise(best)
 draw(best, select = 1, dist = 0.02, rug = FALSE)
 tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
@@ -407,7 +414,7 @@ b <- getViz(best, nsim = 50)
 ck1 <- check2D(b, x1 = "X", x2 = "Y")
 ck1 + l_gridCheck2D(gridFun = mean)
 testDispersion(best) #looks good
-simulationOutput <- simulateResiduals(fittedModel = best, n = 500)
+simulationOutput <- simulateResiduals(fittedModel = best, n = 200)
 plot(simulationOutput) #q-q plot looks good
 plotResiduals(simulationOutput) #not good, not sure how to interpret; 
 #  this plot seems to suggest problems
@@ -416,10 +423,11 @@ testUniformity(simulationOutput)
 testOutliers(simulationOutput)
 #try other distributions:
 #tweedie
-fit1.1.tw <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20),
+fit2.tw <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
+              ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("tp", "cr")),
               offset = logArea, family = tw, method = "REML", data = df)
-summary(fit1.1.tw) 
-best <- fit1.1.tw
+summary(fit2.tw) 
+best <- fit2.tw
 appraise(best)
 draw(best, select = 1, dist = 0.02, rug = FALSE)
 tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
@@ -427,7 +435,7 @@ b <- getViz(best, nsim = 50)
 ck1 <- check2D(b, x1 = "X", x2 = "Y")
 ck1 + l_gridCheck2D(gridFun = mean)
 testDispersion(best) #not so good 
-simulationOutput <- simulateResiduals(fittedModel = best, n = 500)
+simulationOutput <- simulateResiduals(fittedModel = best, n = 200)
 plot(simulationOutput) #q-q plot looks good, similar to above, but significant deviation
 plotResiduals(simulationOutput) #not good, not sure how to interpret; 
 #  this plot seems to suggest problems
@@ -436,10 +444,11 @@ testUniformity(simulationOutput)
 testOutliers(simulationOutput)
 #overall, tweedie not as good as NB
 #try simple Poisson
-fit1.1.po <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20),
+fit2.po <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
+              ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("tp", "cr")),
                  offset = logArea, family = poisson, method = "REML", data = df)
-summary(fit1.1.po) 
-best <- fit1.1.po
+summary(fit2.po) 
+best <- fit2.po
 appraise(best) #that does not look good, try Darmha
 draw(best, select = 1, dist = 0.02, rug = FALSE)
 tryCatch(draw(best, select = 2, dist = 0.02, rug = FALSE), error = function(e) e)
@@ -447,28 +456,17 @@ b <- getViz(best, nsim = 50)
 ck1 <- check2D(b, x1 = "X", x2 = "Y")
 ck1 + l_gridCheck2D(gridFun = mean)
 testDispersion(best) #not so good!
-simulationOutput <- simulateResiduals(fittedModel = best, n = 500)
+simulationOutput <- simulateResiduals(fittedModel = best, n = 200)
 plot(simulationOutput) #q-q plot looks good, similar to above, but significant deviation
 plotResiduals(simulationOutput) #not good, not sure how to interpret; 
 #  this plot seems to suggest problems
 testZeroInflation(simulationOutput) #not so good!
 testUniformity(simulationOutput)
 testOutliers(simulationOutput, type = "bootstrap")
-#fit1.1 looks the best, but all seem to give similar spatial and temporal patterns
-save.image()
-#try the usual thin plate spline with second derivative penalty
-rm(list = ls())
-load(".RData")
-fit1.1.2 <- gam(Count~s(X, Y, k = 200) + s(Year, k = 20),
-                 offset = logArea, family = nb, method = "REML", data = df)
-summary(fit1.1.2)
-appraise(fit1.1.2)
-draw(fit1.1.2, select = 1, dist = 0.02, rug = FALSE)
-AIC(fit1.1, fit1.1.2) #Hum, this one is smoother but slightly worse AIC...
+#fit2 looks the best, but all seem to give similar spatial and temporal patterns
+save.image(file = "results/abr.RData")
 ###############################
 ## Fit same model but with no flying birds
-rm(list = ls())
-load(".RData")
 ## Make new data frame without fliers
 birds2 <- birds.sf |> cbind(st_coordinates(birds.sf)) |> st_drop_geometry() |>
   rename(Lon = X, Lat = Y, single = Males, pairs = Pairs) |>
@@ -517,14 +515,15 @@ saveRDS(df, file = "data/segmentized_triangle_data_nofliers.RDS")
 ######################
 ## fit model 
 library(mgcv)
-fit1.1.nofliers <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Year, k = 20),
+fit2.nofliers <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
+                       ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("tp", "cr")),
               offset = logArea, family = nb, method = "REML", data = df)
-saveRDS(fit1.1.nofliers, file = "results/fit1.1.nofliers.RDS")
-summary(fit1.1.nofliers)
-plot(fit1.1.nofliers)
+saveRDS(fit2.nofliers, file = "results/abr.nofliers.RDS")
+summary(fit2.nofliers)
+#plot(fit2.nofliers)
 ##Fit a x,y only model for later use in dsims:
 df <- readRDS(file = "data/segmentized_triangle_data_nofliers.RDS") |>
-  rename(x = X, y = Y)
-fit <- gam(Count~s(x, y, bs="ds", k = 200, m=c(1,.5)),
+  rename(x = X, y = Y) #need to rename for the dsims package
+fit <- gam(Count~s(x, y, bs="tp", k = 200),
            offset = logArea, family = nb, method = "REML", data = df)
-saveRDS(fit, file = "results/fit.nofliers.RDS")
+saveRDS(fit, file = "results/fit.xy.nofliers.RDS")
