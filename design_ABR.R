@@ -4,10 +4,10 @@ library(sf)
 library(units)
 library(readxl)
 #read in data
-triangle <- st_read(dsn = "data/Barrow_Triangle_STEI_Aerial_SA")
+triangle <- st_read(dsn = "data/Barrow_Triangle_STEI_Aerial_SA", quiet = TRUE)
 TriangleArea <- st_area(triangle) |> set_units("km^2") |> drop_units()
 trans <- st_read(dsn = "data/Barrow_STEI_standardized_transects_Aug2024.gpx", 
-                 layer = "routes") |>
+                 layer = "routes", quiet = TRUE) |>
   select(Transect = name)
 #add length to transect df
 trans <-   mutate(trans, Length = units::set_units(st_length(trans), "km"))
@@ -97,7 +97,8 @@ design.est2 <- birds3 |>
             sd_Total = (TriangleArea/sArea) * 
               sqrt( (sArea*sum(Area*(Num/Area - sum_Num/sArea)^2)/(n - 1) )) ) |>
   mutate(upper = Total + 2*sd_Total, 
-         lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total))
+         lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total)) |>
+  select(Year, n, Total, sd_Total, upper, lower)
 # ggplot(data = design.est) +  
 #   geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
 #   geom_line(aes(x = Year, y = Total)) + 
@@ -119,11 +120,11 @@ ggplot(data = design.est2, aes(group=Year<2020)) +
   ylab("Indicated Breeding Bird Index")
 # +
 #   labs(title = "Design-based estimated breeding bird index in Triangle (no detection)")
-ggsave("results/trianle_raw_design_noflying.png")
+ggsave("results/design_ABR_noflying.png")
+#make df of estimate for output below
+df <- mutate(design.est2, Flying = FALSE)
 #should try "O2" of Fewster 2009, recommended for systematic designs with 
 #  gradient in density
-#  need to group into overlapping strata
-df <- mutate(design.est2, Flying = FALSE) 
 ################################################################################
 #add flying birds
 birds2 <- birds |> cbind(st_coordinates(birds)) |> st_drop_geometry() |>
@@ -153,7 +154,8 @@ design.est2 <- birds3 |>
             sd_Total = (TriangleArea/sArea) * 
               sqrt( (sArea*sum(Area*(Num/Area - sum_Num/sArea)^2)/(n - 1) )) ) |>
   mutate(upper = Total + 2*sd_Total, 
-         lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total))
+         lower = if_else(Total - 2*sd_Total < 0, 0, Total - 2*sd_Total)) |>
+  select(Year, n, Total, sd_Total, upper, lower)
 ggplot(data = design.est2, aes(group=Year<2020)) +  
   geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
   geom_line(aes(x = Year, y = Total)) + 
@@ -163,6 +165,6 @@ ggplot(data = design.est2, aes(group=Year<2020)) +
   ylab("Indicated Breeding Bird Index") 
 # +
 #   labs(title = "Design-based estimated breeding bird index in Triangle (no detection)")
-ggsave("results/trianle_raw_design_flying.png")
+ggsave("results/design_ABR_flying.png")
 df <- rbind(df, mutate(design.est2, Flying = TRUE))
-write_csv(df, file = "results/design_estimates_ABR.csv")
+write_csv(df, file = "results/design_ABR.csv")

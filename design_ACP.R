@@ -18,16 +18,16 @@
 ################################################################################
 ##use ACP-Mapping data and "R3" of Fewster
 path = "../ACP-Mapping/Data/ACP_2023/analysis_output/ACP_DesignStrata_QC.gpkg"
-acp <- st_read(dsn=path)
+acp <- st_read(dsn=path, quiet = TRUE)
 acp <- mutate(acp, StratumArea = units::set_units(st_area(acp), "km^2"))
 
 path = "../ACP-Mapping/Data/ACP_2023/analysis_output/Bird-QC-Obs-2024-11-12.csv"
 birds <- read_csv(file = path) |>
   filter(Species == "STEI") |>
   mutate(Obs_Type = replace(Obs_Type, Obs_Type == "open", "single"))
-table(birds$Year, birds$Obs_Type)
+#table(birds$Year, birds$Obs_Type)
 path = "../ACP-Mapping/Data/ACP_2023/analysis_output/ACP_DesignTrans_QC_2024-11-12.gpkg"
-trans <- st_read(dsn = path)
+trans <- st_read(dsn = path, quiet = TRUE)
 trans <- mutate(trans, Length = units::set_units(st_length(trans), "km")) |>
   mutate(trans, Year = as.numeric(Year))
 birds <- right_join(st_drop_geometry(birds), st_drop_geometry(trans)) |>
@@ -65,5 +65,5 @@ ggplot(data = birds2, aes(x = Year, y=Total, group=Year<2020)) +
   scale_x_continuous(breaks = seq(2006, 2025, by = 2)) + 
   scale_y_continuous(limits = c(0, 2000)) + 
   ylab("Indicated Breeding Bird Index")
-ggsave("results/acp_design-nodetection.png")
-write_csv(birds2, file = "results/design_estimates_ACP.csv")
+ggsave("results/design_ACP.png")
+write_csv(birds2, file = "results/design_ACP.csv")

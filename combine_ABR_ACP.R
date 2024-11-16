@@ -18,7 +18,9 @@ spp <- "STEI"
 #read in lines and birds data
 lines <- st_read(dsn = "Data/ACP_2023/analysis_output/Lines-Obs-2024-02-15.gpkg")
 birds <- read_csv(file = "Data/ACP_2023/analysis_output/Bird-QC-Obs-2024-03-21.csv") %>%
-  st_as_sf(coords = c("Lon", "Lat"), crs = 4326)
+  st_as_sf(coords = c("Lon", "Lat"), crs = 4326) |>
+  #Need to replace the "open" STEI observation with "single", do it here for now :(
+  mutate(Obs_Type = replace(Obs_Type, Species == "STEI" & Obs_Type == "open", "single"))
 acp <- st_read(dsn="Data/ACP_2023/analysis_output/ACP_DesignStrata_QC.gpkg")
 #make grid
 acp <- select_area(area = acp, select = "all") %>%
@@ -44,27 +46,27 @@ saveRDS(df, file = "data/segmentized_acp_data.RDS")
 #fit acp model just to have a model object of know orgin here in this project
 #we will fit a Duchon slipe and a tprs model to compare issue with posterior 
 # similation and eider density far from coast
-library(mgcv)
-library(gratia)
-df$Observer <- factor(df$Observer)
-fit.ds <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Observer, bs = "re") + 
-             s(Year, k = 14), offset = logArea, family = nb, method = "REML", 
-             data = df)
-draw(fit.ds, select = 1, dist = 0.02, rug = FALSE)
-test <- fit.ds
-test$coefficients <- rmvn(1, coef(fit.ds), vcov(fit.ds))
-draw(test, select = 1, dist = 0.02, rug = FALSE)
-#fit tp
-fit.tp <- gam(Count~s(X, Y, k = 200) + s(Observer, bs = "re") + 
-                s(Year, k = 14), offset = logArea, family = nb, method = "REML", 
-              data = df)
-draw(fit.tp, select = 1, dist = 0.02, rug = FALSE)
-test <- fit.tp
-test$coefficients <- rmvn(1, coef(fit.tp), vcov(fit.tp))
-draw(test, select = 1, dist = 0.02, rug = FALSE)
-#clear workspace
-rm(list = ls())
-################################################################################
+# library(mgcv)
+# library(gratia)
+# df$Observer <- factor(df$Observer)
+# fit.ds <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Observer, bs = "re") + 
+#              s(Year, k = 14), offset = logArea, family = nb, method = "REML", 
+#              data = df)
+# draw(fit.ds, select = 1, dist = 0.02, rug = FALSE)
+# test <- fit.ds
+# test$coefficients <- rmvn(1, coef(fit.ds), vcov(fit.ds))
+# draw(test, select = 1, dist = 0.02, rug = FALSE)
+# #fit tp
+# fit.tp <- gam(Count~s(X, Y, k = 200) + s(Observer, bs = "re") + 
+#                 s(Year, k = 14), offset = logArea, family = nb, method = "REML", 
+#               data = df)
+# draw(fit.tp, select = 1, dist = 0.02, rug = FALSE)
+# test <- fit.tp
+# test$coefficients <- rmvn(1, coef(fit.tp), vcov(fit.tp))
+# draw(test, select = 1, dist = 0.02, rug = FALSE)
+# #clear workspace
+# rm(list = ls())
+# ################################################################################
 ####################
 ## load ABR data, data object from code in wrangle_ABR.R
 abr <- readRDS(file = "data/segmentized_triangle_data_nofliers.RDS")
@@ -95,9 +97,16 @@ rm(tmp)
 #    s(Observer, bs = "re")
 library(mgcv)
 df$Observer <- factor(df$Observer)
-fit <- gam(Count~s(X, Y, bs="ds", k = 200, m=c(1,.5)) + s(Observer, bs = "re") + 
-      s(Year, k = 20), offset = logArea, family = nb, method = "REML", data = df)
-saveRDS(fit, file = "results/fit.RDS")
+df$fYear <- factor(df$Year)
+fit1 <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
+              s(Observer, bs = "re"),
+            offset = logArea, family = nb, method = "REML", data = df)
+saveRDS(fit1, file = "results/fit1.comb.RDS")
+fit2 <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
+              s(Observer, bs = "re"),
+              ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("tp", "cr")),
+            offset = logArea, family = nb, method = "REML", data = df)
+saveRDS(fit2, file = "results/fit2.comb.RDS")
 ################################################################################
 ## predict and map
 fit <- readRDS(file = "results/fit.RDS")
