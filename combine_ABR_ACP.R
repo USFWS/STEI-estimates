@@ -16,8 +16,8 @@ source("map_density_functions.R")
 #select species
 spp <- "STEI"
 #read in lines and birds data
-lines <- st_read(dsn = "Data/ACP_2023/analysis_output/Lines-Obs-2024-02-15.gpkg")
-birds <- read_csv(file = "Data/ACP_2023/analysis_output/Bird-QC-Obs-2024-03-21.csv") %>%
+lines <- st_read(dsn = "Data/ACP_2023/analysis_output/Lines-Obs-2024-11-12.gpkg")
+birds <- read_csv(file = "Data/ACP_2023/analysis_output/Bird-QC-Obs-2024-11-12.csv") %>%
   st_as_sf(coords = c("Lon", "Lat"), crs = 4326) |>
   #Need to replace the "open" STEI observation with "single", do it here for now :(
   mutate(Obs_Type = replace(Obs_Type, Species == "STEI" & Obs_Type == "open", "single"))
@@ -68,6 +68,7 @@ saveRDS(df, file = "data/segmentized_acp_data.RDS")
 # rm(list = ls())
 # ################################################################################
 ####################
+rm(list=ls())
 ## load ABR data, data object from code in wrangle_ABR.R
 abr <- readRDS(file = "data/segmentized_triangle_data_nofliers.RDS")
 ####################
@@ -98,18 +99,30 @@ rm(tmp)
 library(mgcv)
 df$Observer <- factor(df$Observer)
 df$fYear <- factor(df$Year)
-fit1 <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
-              s(Observer, bs = "re"),
+df$survey <- factor(ifelse(df$Observer == "999", "ABR", "ACP"))
+fit1 <- gam(Count~survey + s(X, Y, bs="tp", k = 200) + s(Year, k = 20),
             offset = logArea, family = nb, method = "REML", data = df)
 saveRDS(fit1, file = "results/fit1.comb.RDS")
-fit2 <- gam(Count~s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
-              s(Observer, bs = "re"),
+fit2 <- gam(Count~survey + s(X, Y, bs="tp", k = 200) + s(Year, k = 20) + 
               ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("tp", "cr")),
             offset = logArea, family = nb, method = "REML", data = df)
 saveRDS(fit2, file = "results/fit2.comb.RDS")
+##plot models
+library(gratia)
+library(DHARMa)
+draw(fit2, select = 1, rug=FALSE)
+draw(fit2, select = 2, rug=FALSE)
+draw(fit2, select = 3, rug=FALSE)
+draw(fit2, select = 4, rug=FALSE)
+draw(fit1, select = 1, rug=FALSE)
+draw(fit1, select = 2, rug=FALSE)
+draw(fit1, select = 3, rug=FALSE)
+summary(fit1)
+summary(fit2)
 ################################################################################
 ## predict and map
-fit <- readRDS(file = "results/fit.RDS")
+#fit <- readRDS(file = "results/fit.RDS")
+fit <- fit2
 #make map, code from ACP-Mapping/map_GAM.R
 source("../ACP-Mapping/map_density_functions.R")
 acp <- st_read(dsn="../ACP-Mapping/Data/ACP_2023/analysis_output/ACP_DesignStrata_QC.gpkg")
@@ -142,7 +155,7 @@ p2 <- ggplot(data = plotdat) + geom_sf(aes(fill=CV), col = NA) +
 print(p2)
 ggsave("results/combined_map_cv.png")
 min(plotdat$CV)
-# [1] 0.4419038
+#[1] 0.4077851
 #zoom to triangle
 plotdat <- st_transform(plotdat, crs = 4326)
 ggplot(data = plotdat) + geom_sf(aes(fill=fit), col = NA) +
@@ -156,13 +169,21 @@ ggsave("results/combined_map_zoomed.png")
 library(units)
 newdat$Area <- drop_units(set_units(grid$Grid.Area, "km^2"))
 df <- data.frame(NULL)
-for(i in 1999:2023){
+for(i in 1999:2024){
   df <- rbind(df, mutate(newdat, Year = i))
 }
+detdf <- data.frame(Bin = 1:4, p = c(0.514, 0.457, 0.143, 0.114), 
+                    lower = c(0.338, 0.217, 0.048, 0.026), 
+                    upper=c(0.689, 0.717, 0.306, 0.310))
+mP <- mean(detdf$p)
+sSE <- sqrt(mean( ((detdf$upper - detdf$lower)/(2*1.96))^2 ))
+#method of moments for Beta distribution
+shape1 = mP*( mP*(1-mP)/sSE^2 - 1)
+shape2 = (1 - mP)*( mP*(1-mP)/sSE^2 - 1)
 Nsamples <- 250
 s <- rbeta(Nsamples, 
-           shape1 = 0.3*( 0.3*(1-0.3)/0.0555^2 - 1), 
-           shape2 = (1 - 0.3)*( 0.3*(1-0.3)/0.0555^2 - 1))
+           shape1 = shape1, 
+           shape2 = shape2)
 post <- matrix(0, Nsamples, length(unique(df$Year)))
 
 Xp <- predict(fit, type="lpmatrix", newdata=df, exclude = "s(Observer)",

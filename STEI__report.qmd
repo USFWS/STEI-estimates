@@ -20,7 +20,7 @@ execute:
 
 ### Survey areas and data source
 
-Data used in this report came from the Arctic Coastal Plain Survey (hereafter, ACP) and a survey conducted by ABR, Inc. (ABR) near Utqiaġvik, Alaska (hereafter, the Triangle survey, @fig-area). The ACP survey has been described in Amundson et al. [-@amundson2019], but here only data from 2007 to 2019 and 2022 to 2024 is used. The timing of the survey differed before 2007, which causes a difference in observed response (the subject of the effort in @amundson2019). In addition the data before 2007 have not undergone the same level of quality control and have not been made publicly available. The data from 2007 to 2024, a description of quality control processes, and data manipulations are available at @osnasACP and @osnas-github. 
+Data used in this report came from the Arctic Coastal Plain Survey (hereafter, ACP) and a survey conducted by ABR, Inc. (ABR) near Utqiaġvik, Alaska (hereafter, the Triangle survey, @fig-area). The ACP survey has been described in Amundson et al. [-@amundson2019], but here data from 2007 to 2019 and 2022 to 2024 is used. The timing of the survey differed before 2007, which causes a difference in observed response (the subject of the effort in @amundson2019). In addition the data before 2007 have not undergone the same level of quality control and have not been made publicly available. The data from 2007 to 2024, a description of quality control processes, and data manipulations are available at @osnasACP and @osnas-github. 
 
 The Triangle survey is described in unpublished reports from ABR [@triangleABR]. Data for the Triangle survey are not publicly available at this time, but were obtained from ABR. A lengthy quality control process was applied to make data available for use in this report (documented in the file `wrangle_ABR.R`, available from the author). Source data for this analysis is available from the author. 
 
@@ -486,8 +486,9 @@ load("results/abr.RData")
 
 #AIC table
 df <- AIC(fit0, fit1, fit2, fit1.re, fit1.1.re)
+df$DeltaAIC <- df$AIC - min(df$AIC)
 rownames(df) <- c("M0", "M1", "M2", "M3", "M4")
-df <- rownames_to_column(df, var = "Model") |> mutate_at(.vars=2:3, .fun=round, digits = 2)
+df <- rownames_to_column(df, var = "Model") |> mutate_at(.vars=2:4, .fun=round, digits = 2) |> arrange(DeltaAIC)
 kableExtra::kable(df)
 ```
 
@@ -537,12 +538,13 @@ Posterior estimates of Steller's Eider in the Triangle survey area without accou
 
 ```{r}
 #| label: fig-trendABR
-#| fig-cap: "Posterior trend estimates for Steller's Eider in the ABR survey area, 1999-2023. The y axis is the log of the geometric mean growth rate, and the x axis is the lag-year trend, i.e.,  for lag 10 gives the 10-year trenf from 2013 to 2023. Posteriors describe as in other figures."
+#| fig-cap: "Posterior trend estimates for Steller's Eider in the ABR survey area, 1999-2023. The y axis is the log of the geometric mean growth rate, and the x axis is the lag-year trend, i.e.,  for lag 10 gives the 10-year trend from 2013 to 2023. Posteriors described as in other figures."
  
 post <- readRDS(file = "results/ABR_post.RDS")
 #find long term posterior mean and CI
 m = round(mean(apply(post[,-c(1:5)], 1, mean)), 1)
-q = round(quantile(apply(post[,-c(1:5)], 1, mean), probs=c(0.025, 0.05, 0.5, 0.975)), 1)
+q = round(quantile(apply(post[,-c(1:5)], 1, mean), 
+                   probs=c(0.025, 0.05, 0.5, 0.975)), 1)
 
 df <- data.frame(NULL)
 tyears <- dim(post)[2]
@@ -560,12 +562,107 @@ ggplot(data = df, aes(x = t, y=mtrend)) +
   geom_line(aes(y = med), linetype = "dashed") +
   geom_hline(yintercept = 0) +
   scale_x_continuous(breaks = seq(2, 24, by = 2)) + 
+  scale_y_continuous(breaks = seq(-1, 0.6, by = 0.2)) + 
   ylab("log Trend") + 
   xlab("Lag")
 
+write_csv(df, file = "trend_ABR.csv")
 ```
 
 ### Model-based Estimates: ACP
+
+Models fit to the ACP data showed that model with a random effect of year, rather than a smooth of year, fit best (@tbl-modelsACP). In addition, models with a random observer effect contributed nothing to improvement in AIC (@tbl-modelsACP). Upon examining model summary statistics, models with a smooth of year shrunk to a straight line and observer effect variance was essentially zero (results not shown).  These results are likely due to the very few observations of Steller's Eider on the ACP survey. Spatial effects showed a simple decline in eider density as distance from the coast increase (@fig-modelACP a), and temporal effects that varied greatly on the log scale (@fig-modelACP b).  
+
+```{r}
+#| label: tbl-modelsACP
+#| tbl-cap: "AIC table for model fit to ACP data. Model structures are described in the main text. The suffix '.obs' indicate a model that contained a random effect of observer."
+library(tidyverse)
+rm(list=ls())
+load("results/ACP.RData")
+aic$DeltaAIC <- aic$AIC - min(aic$AIC)
+aic <- aic[ !row.names(aic) %in% c("fit2.re", "fit2.o.re"),]
+rownames(aic) <- c("M0", "M0.obs", "M1", "M1.obs", "M2", "M2.obs", "M3", "M4", "M3.obs", "M4.obs")
+aic <- rownames_to_column(aic, var = "Model") |> 
+  mutate_at(.vars=2:4, .fun=round, digits = 2) |> 
+  arrange(DeltaAIC)
+kableExtra::kable(aic)
+```
+
+```{r}
+#| label: fig-modelACP
+#| fig-cap: "Partial effect of (a) spacial smooth and (b) year for the ACP model M3."
+#| layout-nrow: 2
+#| fig-subcap: 
+#|   - "Spatial smooth"
+#|   - "Temporal effects"
+library(gratia)
+draw(fit0.re, select = 1, dist = 0.02, rug = FALSE) + 
+  theme(axis.text.x=element_blank(), 
+      axis.ticks.x=element_blank(), 
+      axis.text.y=element_blank(), 
+      axis.ticks.y=element_blank()) 
+
+df <- data.frame(
+  Effect = fit0.re$coefficients[str_detect(names(fit0.re$coefficients), "fYear")], 
+  Year = as.numeric(levels(fit0.re$model$fYear)))
+ggplot(data = df, aes(x = Year, y = Effect)) + geom_point() + 
+  scale_x_continuous(breaks = seq(2007, 2025, by = 2)) +
+  labs(title = "s(fYear)")
+```
+
+Posterior simulation of the year-specific total across the whole ACP are shown in @fig-yearACP without a detection correction (a) and with a detection correction (b). The population appear to fluctuate in a similar manner as in the Triangle survey estimates, but the year-specific estimate for the ACP are much less precise. Because the best model contained only a simple random effect and the survey was not completed in 2020 and 2021, predictions were not made for these years using this model. Such prediction could be made by simulating the variance of the random effect but this would simply give an estimate that spans the range of historical estimates. 
+Note that year-specific estimates of the total number of eider across the ACP  based on model $M3$ (@fig-acpA) are less extreme than those based on design-based estimates (@fig-designACP). That is, the model based estimate given lower number in high abundance year and higher estimates in low abundance years compared to the model-based estimates. This is do to the 'shrinkage' or regularization of the year random effect. In general, design based estimate might over estimate the eider population when one or more eider happen to be observed on a transect in one year and underestimate when one or more eiders are not observed on a transect, even though they are in the study area. 
+
+::: {#fig-yearACP layout-nrow=2}
+
+![](results/ACP_noD_ibb_year.png){#fig-acpA}
+
+![](results/ACP_withD_ibb_year.png){#fig-acpB}
+
+Posterior estimates of Steller's Eider in across the ACP survey area without accounting for detection (a) and after applying a detection correction (b). The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95% credible interval.
+:::
+
+Trends for Steller's Eider across the ACP are shown in @fig-trendACP. For all time ranges (lags), the trend was not well estimated. For example, the 10-year trend posterior mean was 0.11 (CI: -0.03, 0.23), which could be a modest decrease to a very fast increase [cf., @fig-acpB]. For all time period the 95% credible interval overlaps 0 and the upper bound was often > 0.15 [@fig-trendACP].
+
+```{r}
+#| label: fig-trendACP
+#| fig-cap: "Posterior trend estimates for Steller's Eider in the ACP survey area, 2007-2024. The y axis is the log of the geometric mean growth rate, and the x axis is the lag-year trend, i.e.,  for lag 10 gives the 10-year trend from 2014 to 2024. Posteriors described as in other figures."
+ 
+post <- readRDS(file = "results/ACP_post.RDS")
+#augment post with NAs for years 2020 and 2021
+tmp <- matrix(NA, nrow = dim(post)[1], ncol = dim(post)[2]+2)
+tmp[,1:13] <- post[,1:13]
+tmp[,16:18] <- post[,14:16]
+post <- tmp
+rm(tmp)
+#find long term posterior mean and CI
+m = round(mean(apply(post[,], 1, mean, na.rm = TRUE)), 1)
+q = round(quantile(apply(post[,], 1, mean, na.rm = TRUE), 
+                   probs=c(0.025, 0.05, 0.5, 0.975)), 1)
+
+df <- data.frame(NULL)
+tyears <- dim(post)[2]
+for( t in 1:(tyears-1)){
+  trend <- (log(post[,tyears]) - log(post[,tyears-t]))/t
+  df <- rbind(df, data.frame(t = t, mtrend = mean(trend, na.rm = TRUE), 
+                             med = quantile(trend, probs = 0.5, na.rm = TRUE), 
+                            upper = quantile(trend, probs = 0.975, na.rm = TRUE), 
+                            lower = quantile(trend, probs = 0.025, na.rm = TRUE)))
+}
+
+ggplot(data = df, aes(x = t, y=mtrend)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
+  geom_line() + 
+  geom_line(aes(y = med), linetype = "dashed") +
+  geom_hline(yintercept = 0) +
+  scale_x_continuous(breaks = seq(2, 24, by = 2)) + 
+  scale_y_continuous(breaks = seq(-0.5, 2.5, by = 0.25)) + 
+  ylab("log Trend") + 
+  xlab("Lag")
+
+write_csv(df, file = "trend_ACP.csv")
+
+```
 
 ### Model-based Estimates: Triangle and ACP combined
 
