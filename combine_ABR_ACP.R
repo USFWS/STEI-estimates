@@ -116,13 +116,12 @@ draw(fit2, select = 3, rug=FALSE)
 draw(fit2, select = 4, rug=FALSE)
 draw(fit1, select = 1, rug=FALSE)
 draw(fit1, select = 2, rug=FALSE)
-draw(fit1, select = 3, rug=FALSE)
 summary(fit1)
 summary(fit2)
 ################################################################################
 ## predict and map
-#fit <- readRDS(file = "results/fit.RDS")
-fit <- fit2
+library(mgcv)
+fit <- readRDS(file = "results/fit2.comb.RDS")
 #make map, code from ACP-Mapping/map_GAM.R
 source("../ACP-Mapping/map_density_functions.R")
 acp <- st_read(dsn="../ACP-Mapping/Data/ACP_2023/analysis_output/ACP_DesignStrata_QC.gpkg")
@@ -134,7 +133,7 @@ grid <- st_intersection(acp, st_make_grid(x=acp, cellsize = 1000)) %>%
 newdat <- st_centroid(grid) %>%
   st_coordinates() %>%
   as.data.frame() %>%
-  mutate(Observer = "HMW", logArea = 0, Year = 2013) 
+  mutate(Observer = "HMW", survey = "ABR", logArea = 0, Year = 2013) 
 # %>%
 #   cbind(grid_position)
 preds <- predict(fit, newdata = newdat, type = "response", se.fit = TRUE,
@@ -155,7 +154,7 @@ p2 <- ggplot(data = plotdat) + geom_sf(aes(fill=CV), col = NA) +
 print(p2)
 ggsave("results/combined_map_cv.png")
 min(plotdat$CV)
-#[1] 0.4077851
+#[1] 0.2741714
 #zoom to triangle
 plotdat <- st_transform(plotdat, crs = 4326)
 ggplot(data = plotdat) + geom_sf(aes(fill=fit), col = NA) +
@@ -186,7 +185,7 @@ s <- rbeta(Nsamples,
            shape2 = shape2)
 post <- matrix(0, Nsamples, length(unique(df$Year)))
 
-Xp <- predict(fit, type="lpmatrix", newdata=df, exclude = "s(Observer)",
+Xp <- predict(fit, type="lpmatrix", newdata=df,
               newdata.guaranteed=TRUE)
 #sample from parameter posterior
 b <- rmvn(Nsamples, coef(fit), vcov(fit))
@@ -200,6 +199,8 @@ for(j in 1:Nsamples ){
     unlist()
 }
 #summarize
+#getting some absurd posterior samples, filter?
+post <- post[apply(post, 1, max) < 10000,]
 sumdf <- data.frame(Year = min(fit$model$Year):max(fit$model$Year),
                     Mean = apply(post, 2, mean), 
                     sd = apply(post, 2, sd), 
@@ -210,11 +211,52 @@ sumdf <- data.frame(Year = min(fit$model$Year):max(fit$model$Year),
 gg <- ggplot(data = sumdf) + 
   geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
   geom_line(aes(x = Year, y = Mean)) + 
+  geom_line(aes(x = Year, y = median), linetype = "dashed") + 
   scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
-  ylab("Estimated Indicated Bird Index") +
-  labs(title = "Estimated breeding bird index across ACP (no detection)")
+  ylab("Indicated Breeding Bird Index")
 print(gg)
-ggsave("results/combined_year_nodetection.png")
+#filter above seems to work OK for fit1 but not fit2
+#wacky, for fit2, direct MN sampling does not work well, large "blowup" of 
+# estimates in first few year. Is this due to posterior sampling or the model?
+#ggsave("results/combined_year_noD_filtered.png")
+##try MH sampling
+b <- gam.mh(fit, ns=2000, thin = 2, rw.scale = 0.02)
+b <- b$bs
+plot(b[,1])
+plot(b[,2])
+plot(b[,200])
+hist(b[,1])
+b <- b[sample(1:dim(b)[1], Nsamples),]
+post <- matrix(0, Nsamples, length(unique(df$Year)))
+for(j in 1:Nsamples ){
+  p <- exp(Xp%*%b[j,]) * as.vector(df$Area) #replicate of prediction at all points
+  post[j,] <- cbind(df, p) %>%
+    group_by(Year) %>%
+    summarize( Total = sum(2*p)) %>% #INDICTED BIRDS!!!
+    ungroup() %>%
+    select(Total) %>%
+    unlist()
+}
+#try filtering post for fit2 after the MH sampling!:
+# post <- post[apply(post, 1, max) < 10000,]
+sumdf <- data.frame(Year = min(fit$model$Year):max(fit$model$Year),
+                    Mean = apply(post, 2, mean), 
+                    sd = apply(post, 2, sd), 
+                    median = apply(post, 2, median), 
+                    upper = apply(post, 2, quantile, probs = 0.975),
+                    lower = apply(post, 2, quantile, probs = 0.025))
+#plot
+gg <- ggplot(data = sumdf) + 
+  geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
+  geom_line(aes(x = Year, y = Mean)) + 
+  geom_line(aes(x = Year, y = median), linetype = "dashed") + 
+  scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
+  ylab("Indicated Breeding Bird Index")
+print(gg)
+#that seems to work for fit1
+#wow, MH didn't work at all for fit2, must be the s-t interact in the model
+#even filter the posterior after the MH step didn't work. Abandone fit2
+################################################################################
 #add detection
 for(j in 1:Nsamples ){
   p <- exp(Xp%*%b[j,]) * as.vector(df$Area) #replicate of prediction at all points

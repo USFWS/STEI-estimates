@@ -1,17 +1,25 @@
 ---
 title: "Steller's eider estimates from the Arctic Coastal Plain and ABR Triangle surveys"
-author: "Erik Osnas"
+author:
+  name: Erik E. Osnas
+  orcid: 0000-0001-9528-0866
+  email: erik_osnas@fws.gov
+  affiliation: 
+    name: Division of Migratory Bird Management
+    department: US Fish and Wildlife Service
+    city: Anchorage
+    state: AK
 date: "`r Sys.Date()`"
 bibliography: bibliography.bib
 format:
-  pdf:
-    documentclass: article
-    toc: true
-    number-sections: true
-    colorlinks: true
+  pdf: default
+  elsevier-pdf:
+    keep-tex: true 
 execute: 
   echo: false
   warning: false
+abstract: |
+  blah, blab, blah
 ---
 
 ## Summary
