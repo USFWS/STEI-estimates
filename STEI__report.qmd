@@ -78,17 +78,17 @@ $$M3: Count \sim s(X, Y) + s(Year) + s_{re}(fYear)$$
 $$M4: Count \sim s(X, Y) + s_{re}(fYear)$$
 In the above, $Count$ is the total number of pairs or males observed in a transect segment, $s()$ indicates a smooth function, $ti()$ indicate a "tensor product smooth" (a multidimensional smooth that allows the units for dimensions to differ), and $s_{re}()$ is a random effect in the usual mixed model sense (in `mgcv: s(..., bs = 're')`). $Year$ is calendar year as a continuous numeric variable, and $fYear$ is calendar year as a factor variable. Model $M0$ is just a smooth of location that does not change through time. Model $M1$ is a smooth of location and a separate smooth of year. This model means that on the log scale the spatial smooth does not change its relative shape through time but the overall height changes as a smooth function of year. Model $M2$ is a smooth of location, year, and a spatio-temporal interaction between location and year. Model $M2$ allows the shape of the spatial pattern to change through time and allows the time trend to depend on location. Model $M3$ estimates a smooth of location, a smooth of year, and a separate random effect of year, which allows abrupt non-smooth deviations from an underlying smooth trend. Model $M4$ estimates a smooth of location and treats year as a simple random effect. In the models above, each effect is written as an "average" or "partial" effect relative to the others and all contain an intercept (not shown). Thus, $s(X,Y) + s(Year)$ is an the average effect of location and an average effect of Year as deviation from an overall intercept. All models used a negative binomial response, a log link function, and the log segment area as an offset, which controlled for varying areas of segments near study area boundaries. Thus, the model is estimating the expected response in 1 $km^2$ of area. The scale parameter of the negative binomial was estimated during model fitting. Other response models were fit (Poisson, Tweedie) and all were found to be substantially worse fitting than the negative binomial. All model fitting and prediction was done using the R package `mgcv` [@r-mgcv]. Model diagnostics were inspected using the residual simulation methods in R package `DHARMa` [@DHARMa] and visualizations using the R package `gratia` [@r-gratia]. Special attention was given to quantile-quantile plots and over-dispersion and zero-inflation metrics. Residual simulations suggested that the negative binomial distribution appropriately modeled the large number of response zeros in these data. To select the best model, the `mgcv::AIC` function was used. 
 
-During posterior simulation (see below), it was found that the model gave widely unrealistic total population predictions when applied to the ACP survey area. Further investigation revealed that this was due to infrequent posterior samples that gave clusters of relatively high eider density far inland. This was due to some samples giving very "wiggly" density surfaces (splines) across the ACP. The original spline basis used to model eider density was based on a 2D Duchon spline [@wood2017] across space with a first derivative penalty (`s(X, Y, bs = "ds", m=c(1, 0.5))` in the syntax of `mgcv` @r-mgcv). This spline has worked well for other, more common, species but appears to not work well when few or no non-zero observations are made far inland. Therefore, I used a 2D spatial spline based on a second derivative penalty, which is more common and the default in `mgcv` [a 'thin plate regression spline' or `s(.., bs = "tp")` in mgcv, @r-mgcv]. Upon simulation, the density surface was more smooth and lacked samples with high-density clusters far inland. The total population posterior distribution was still skewed high, but did not give as extreme predictions. Therefore, for all results here I used thin plate regression splines for spatial smooths.  
+During posterior simulation (see below), it was found that the model gave widely unrealistic total population posterior predictions when applied to the ACP survey area. Further investigation revealed that this was due to infrequent posterior samples that gave clusters of relatively high eider density far inland. The original spline basis used to model eider density was based on a 2D Duchon spline [@wood2017] across space with a first derivative penalty (`s(X, Y, bs = "ds", m=c(1, 0.5))` in the syntax of `mgcv` @r-mgcv). This spline has worked well for other, more common, species but appears to not work well when few or no non-zero observations are made far inland. Therefore, I used a 2D spatial spline based on a second derivative penalty, which is more common and the default in `mgcv` [a 'thin plate regression spline' or `s(.., bs = "tp")` in mgcv, @r-mgcv]. Upon simulation, the density surface was more smooth and lacked extreme high-density clusters far inland. However, when converted to total population estimates, some posterior samples still gave unrealistically high values (>>10000 indicated pairs) when simulations were simulated directly from the parameter estimates and covariance matrix using a mutlivariate normal distribution. This is due to the mutlivarate normal simulations being a poor approximation to the posterior when there are large sections of space that only contain zero observations (see the help files for the `mgcv` function `gam.mh` [@r-mgcv] or [@gratiaPost]). Therefore, the Metropolis-Hasting algorithm was used for posterior simulation. The total population posterior distribution was still skewed high as would be expected due to the log-normal response, but did not give as extreme predictions. Therefore, for all results here I used thin plate regression splines for spatial smooths, and I used Metropolis-Hastings sampling for posterior simulations on ACP models.  
 
-For modelling the ACP data alone, additional models were fit that contained a random effect for observer. The response for these models was observer-specific; therefore, each segment was only 200m wide. An additional five models were fit where each model above also contained an observer effect, $s_{re}(Observer)$. Observer effects were not estimated for the Triangle data because they were not available at the time of this writing. When I combined the Triangle data with the ACP data, I used the best fitting model with an observer effect estimated, and assigned a common observer level to all Triangle data. While this does not model observer level differences in the Triangle data, it would estimate any survey-level difference between the ACP and Triangle surveys. 
+For modelling the ACP data alone, additional models were fit that contained a random effect for observer. The response for these models was observer-specific; therefore, each segment was only 200m wide. An additional five models were fit where each model above also contained an observer effect, $s_{re}(Observer)$. Observer effects were not estimated for the Triangle data because they were not available at the time of this writing. When I combined the Triangle data with the ACP data, I used a fixed factor effect for survey (Triangle or ACP) to model any average difference between surveys and used a model with spatial and temporal smooths as in $M2$. A model with a spatio-temporal interactions ($M3$) was also explored for the combined Triangle and ACP data, but because the two data series do not overlap during the period of 1999-2006, the interaction term was not well estimated and produce widely variable population estimates during this time period during posterior simulations.  
 
-Flying birds are not recorded during the ACP survey but are during the Triangle survey. Approximately 25% of the observation on the Triangle survey are flying birds. Therefore, I used data that contained flying birds for the model comparisons describe above, and then used the structure of the best fitting model structure and fit it to a data set where flying birds were removed. When Triangle and ACP data sets where combined, I removed flying birds from the Triangle data. 
+Flying birds are not recorded during the ACP survey but are during the Triangle survey. Approximately 25% of the observations on the Triangle survey are flying birds. Therefore, I used data that contained flying birds for the model comparisons describe above, and then used the structure of the best fitting model to estimate model parameter using a data set where flying birds were removed. When Triangle and ACP data sets where combined, I removed flying birds from the Triangle data. 
 
 ### Prediction and posterior simulation
 
 I used the `predict.gam` function from `mgcv` package [@r-mgcv, @wood2017] to predict the expected density of eiders across the study area (Triangle or ACP) in each year, 1999 to 2023 for the Triangle and 2007 to 2024 for the ACP.  Note that years with no data collection are included in these predictions. To do this, the study area was grid into 1 $km^2$ or smaller cells, smaller when the cell intersect the boundary of the study area, and centriods and area of each cell was calculated. A data set was then created by replicating these point locations and areas for each year. This large data set was then used in the `predict` function along with the model object from the best fitting GAM model. For spatial maps to represent relative differences in eider density, predictions were made on the response scale (`predict` option `type = "response"`) and the year effect was excluded (`exclude = "s(Year)"` or `exclude = c("s(year)", "ti(X,Y,Year)")`). For displaying the estimate coefficient of variation (CV), the prediction standard error was also returned and used to map the CV. Predictions at cell centriods were used for the entire cell, that is, the continuous smooth density surface was rasterized into 1 $km^2$ or smaller cells for display in maps. 
 
-Posterior simulation was used to calculate population totals over the study area for each year (see examples in help files for `mgcv::predict` or @wood2017, p. 342-343). Predictions were made once on the same grid and years as described above but `type = lpmatrix` was specified so that a design matrix, $\textbf X$,  was returned with one row for each prediction location-year and one column for each term in the model. Multivariate normal samples of the model parameters, $\textbf b_i$ were then simulated using the fitted model parameter vector and variance-covariance matrix. A posterior sample on the response scale was then calculated as 
+Posterior simulation was used to calculate population totals over the study area for each year (see examples in help files for `mgcv::predict` or @wood2017, p. 342-343). Predictions were made once on the same grid and years as described above but `type = lpmatrix` was specified so that a design matrix, $\textbf X$,  was returned with one row for each prediction location-year and one column for each term in the model. Multivariate normal samples of the model parameters, $\textbf b_i$ were then simulated using the fitted model parameter vector and variance-covariance matrix. For the Triangle study area, direct simulation from a multivariate normal distribution was used. For all simulations on the ACP study area, a Metropolis-Hasting algorithm was used to obtain samples because large areas of zero observations caused poor performance based on direct multivariate normal simulation using the parameter estimates and covariance matrix (see `?mgcv::gam.mh` in @r-mgcv or @gratiaPost). A posterior sample on the response scale was then calculated as 
 
 $$\textbf y_i = \textbf a exp(\textbf X \textbf b_i )$$
 where $\textbf a$ is a vector of the area of each grid cell and $\textbf y_i$ is a vector of the *expected responses*. Note that $\textbf y_i$ is the expectation of the negative binomial distribution and not an actual realization; thus, it is $>0$ for all predictions. The above simulation was repeated a large number of times (500) and results were stored. 
@@ -104,7 +104,7 @@ if detection varies only by year, where $d_{ij}$ is a posterior sample of detect
 The posterior trend on the log scale from year $j$ to $j+t$ can be found as 
 
 $$T_{it} = log \left[ (\hat N_{ij+t}/\hat N_{ij})^{1/t} \right] = \frac{log(\hat N_{ij+t}) - log(\hat N_{ij})}{t}.$$
-Note that this measure of trend is identical to the slope parameter in a  "log-linear" regression when the smooth of year in the GAM model, $s(Year)$, gives a straight line. The advantage of the GAM is that the notion of trend can be generalized to non-linear cases where the trend may be increasing, decreasing, or changing cyclically through time. The posterior distribution for any quantity can then be displayed using a histogram or summarized with various metrics. I summarized the posterior with the mean and the 0.025, 0.5 (median), and 0.975 quantiles. All general data manipulation was done with program R [@r-base] and tidyverse packages [@tidyverse]. 
+Note that this measure of trend is identical to the slope parameter in a  "log-linear" regression when the smooth of year in the GAM model, $s(Year)$, gives a straight line. The advantage of the GAM is that the notion of trend can be generalized to non-linear cases where the trend may be increasing, decreasing, or changing cyclically through time. The posterior distribution for any quantity can then be displayed using a histogram or summarized with various metrics. I summarized the posterior with the mean and the 0.025, 0.5 (median), and 0.975 quantiles. For trend, I only used detection corrected posterior estimates (see below). All general data manipulation was done with program R [@r-base] and tidyverse packages [@tidyverse]. 
 
 ### Incorporating detection
 
@@ -546,7 +546,7 @@ Posterior estimates of Steller's Eider in the Triangle survey area without accou
 
 ```{r}
 #| label: fig-trendABR
-#| fig-cap: "Posterior trend estimates for Steller's Eider in the ABR survey area, 1999-2023. The y axis is the log of the geometric mean growth rate, and the x axis is the lag-year trend, i.e.,  for lag 10 gives the 10-year trend from 2013 to 2023. Posteriors described as in other figures."
+#| fig-cap: "Posterior trend estimates for Steller's Eider in the Triangle survey area, 1999-2023. The y axis is the log of the geometric mean growth rate, and the x axis is the lag-year trend, i.e.,  for lag 10 gives the 10-year trend from 2013 to 2023. Posteriors described as in other figures."
  
 post <- readRDS(file = "results/ABR_post.RDS")
 #find long term posterior mean and CI
@@ -573,8 +573,8 @@ ggplot(data = df, aes(x = t, y=mtrend)) +
   scale_y_continuous(breaks = seq(-1, 0.6, by = 0.2)) + 
   ylab("log Trend") + 
   xlab("Lag")
-
-write_csv(df, file = "trend_ABR.csv")
+ggsave(file = "results/trend_ABR.png")
+write_csv(df, file = "results/trend_ABR.csv")
 ```
 
 ### Model-based Estimates: ACP
@@ -667,14 +667,106 @@ ggplot(data = df, aes(x = t, y=mtrend)) +
   scale_y_continuous(breaks = seq(-0.5, 2.5, by = 0.25)) + 
   ylab("log Trend") + 
   xlab("Lag")
-
-write_csv(df, file = "trend_ACP.csv")
+ggsave(file = "results/trend_ACP.png")
+write_csv(df, file = "results/trend_ACP.csv")
 
 ```
 
 ### Model-based Estimates: Triangle and ACP combined
 
+::: {#fig-mapComb layout-nrow=3}
+
+![](results/combined_partial_1.png){#fig-combPart}
+
+![](results/combined_partial_2.png){#fig-temp}
+
+![](results/combined_map_zoomed.png){#fig-combZoom}
+
+Partial effect plots for the spatial (a) and temporal (b) smooth from a GAM model fit to the Triangle and ACP data combined. 
+:::
+
+::: {#fig-yearComb layout-nrow=2}
+
+![](results/combined_year_noD.png){#fig-combA}
+
+![](results/combined_year_withD.png){#fig-combB}
+
+Posterior estimates of Steller's Eider in across the ACP survey area with both ACP and Triangle data combined for model fitting. Posteriors are given without accounting for detection (a) and after applying a detection correction (b). The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95% credible interval.
+:::
+
+```{r}
+#| label: fig-trendComb
+#| fig-cap: "Posterior trend estimates for Steller's Eider in the ACP survey area using data from both the Triangle and ACPsurveys, 1999-2024. The y axis is the log of the geometric mean growth rate, and the x axis is the lag-year trend, i.e.,  for lag 10 gives the 10-year trend from 2014 to 2024. Posteriors described as in other figures."
+ 
+post <- readRDS(file = "results/Comb_post.RDS")
+#find long term posterior mean and CI
+m = round(mean(apply(post[,], 1, mean, na.rm = TRUE)), 1)
+q = round(quantile(apply(post[,], 1, mean, na.rm = TRUE), 
+                   probs=c(0.025, 0.05, 0.5, 0.975)), 1)
+
+df <- data.frame(NULL)
+tyears <- dim(post)[2]
+for( t in 1:(tyears-1)){
+  trend <- (log(post[,tyears]) - log(post[,tyears-t]))/t
+  df <- rbind(df, data.frame(t = t, mtrend = mean(trend, na.rm = TRUE), 
+                             med = quantile(trend, probs = 0.5, na.rm = TRUE), 
+                            upper = quantile(trend, probs = 0.975, na.rm = TRUE), 
+                            lower = quantile(trend, probs = 0.025, na.rm = TRUE)))
+}
+
+ggplot(data = df, aes(x = t, y=mtrend)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
+  geom_line() + 
+  geom_line(aes(y = med), linetype = "dashed") +
+  geom_hline(yintercept = 0) +
+  scale_x_continuous(breaks = seq(2, 24, by = 2)) + 
+  scale_y_continuous(breaks = seq(-0.5, 2.5, by = 0.25)) + 
+  ylab("log Trend") + 
+  xlab("Lag")
+ggsave(file = "results/trend_Comb.png")
+write_csv(df, file = "results/trend_Comb.csv")
+```
+
+## Results summary
+
+Posterior mean population size over the last 20 years for Triangle survey only, (excluding 2020), 18 years for ACP survey only (excluding 2020 and 2021), and 20 years for the combined Triangle and ACP survey data are shown in @tlb-sum. 
+
+```{r}
+#| label: tbl-sum
+#| tbl-cap: Posterior distributions for the 20 year (Triangle and Combined surveys) or 18 year (ACP) mean population size of Steller's Eider. Statistics are the mean, standard deviation (SD), median, upper 97.5 percentile (Upper), and lower 2.5 percentile (Lower) of the posterior 20- or 18-year mean population size. 
+
+post <- readRDS(file = "results/ABR_post.RDS")
+post <- post[,-c(1:5)] |>
+  rowMeans()
+df <- data.frame(Survey = "Triangle", 
+                 Mean = mean(post), 
+                 SD = sd(post),
+                 Median = quantile(post, probs = 0.5), 
+                 Upper = quantile(post, probs = 0.975), 
+                 Lower = quantile(post, probs = 0.025))
+post <- readRDS(file = "results/ACP_post.RDS") |>
+  rowMeans()
+df <- rbind(df, data.frame(Survey = "ACP", 
+                           Mean = mean(post), 
+                           SD = sd(post),
+                           Median = quantile(post, probs = 0.5), 
+                           Upper = quantile(post, probs = 0.975), 
+                           Lower = quantile(post, probs = 0.025)))
+post <- readRDS(file = "results/Comb_post.RDS")
+post <- post[,-c(1:5)] |>
+  rowMeans()
+df <- rbind(df, data.frame(Survey = "Combined", 
+                           Mean = mean(post), 
+                           SD = sd(post),
+                           Median = quantile(post, probs = 0.5), 
+                           Upper = quantile(post, probs = 0.975), 
+                           Lower = quantile(post, probs = 0.025))) 
+kableExtra::kable(df, row.names = FALSE, digits = 1)
+```
+
 ## Discussion
+
+
 
 ## References
 
