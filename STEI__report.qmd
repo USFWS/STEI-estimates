@@ -1,28 +1,29 @@
 ---
-title: "Steller's eider estimates from the Arctic Coastal Plain and ABR Triangle surveys"
+title: "Steller's Eider (*Polysticta stelleri*) population and density estimates from the Arctic Coastal Plain and Utqiaġvik Triangle surveys using generalized additive models"
 author:
   name: Erik E. Osnas
   orcid: 0000-0001-9528-0866
   email: erik_osnas@fws.gov
   affiliation: 
     name: Division of Migratory Bird Management
-    department: US Fish and Wildlife Service
+    department: \newline US Fish and Wildlife Service
     city: Anchorage
     state: AK
 date: "`r Sys.Date()`"
 bibliography: bibliography.bib
 format:
-  pdf: default
   elsevier-pdf:
     keep-tex: true 
 execute: 
   echo: false
   warning: false
 abstract: |
-  blah, blab, blah
+  Annual populations and spatial variation in density is estimated across the Arctic Coastal Plain (ACP) and Utqiaġvik Triangle (Triangle) survey areas for the Steller's Eider (*Polysticta stelleri*) using spatio-temporal generalized additive models and contrasted to more traditional design-based estimates. Compared to design-based estimates, model based estimates were more precise, less variable between years,  fine-scale spatial density maps can easily be produced, and the two data sets can be easily combined to produce a common populations estimate. Across both data sets and when combined, Steller's Eider populations flucuated with a 6-7 year period with population posterior lows that ranged near zero to 200 and highs from 200 to >1000 across the ACP. Over the long term, the posterior 25-year geometric mean growth rate was -0.01 (95% CI: -0.06, 0.04) with shorter term growth rate less well estimate and fluated between positive and near zero. Density maps showed that highest density concentration is in the northern part of the Triangle area with eider much less common southward and across other areas of the ACP. MOdels fit to just the TRiangle area, shown that eider density has been shifting northward though time, but this patterns was not support in the much sparser ACP data set, nor was it well estimated when the ACP and Tinagle data sets wrere combined.    
 ---
 
-## Summary
+## Introduction
+
+
 
 ## Methods
 
@@ -32,7 +33,7 @@ Data used in this report came from the Arctic Coastal Plain Survey (hereafter, A
 
 The Triangle survey is described in unpublished reports from ABR [@triangleABR]. Data for the Triangle survey are not publicly available at this time, but were obtained from ABR. A lengthy quality control process was applied to make data available for use in this report (documented in the file `wrangle_ABR.R`, available from the author). Source data for this analysis is available from the author. 
 
-Important differences between the surveys include much higher sampling coverage of the Triangle survey (25-50%) compared to the ACP survey (approximately 1 - 8%), the much larger area of the ACP survey, and sampling effort is stratified in the ACP survey [@fig-area]. 
+Important differences between the surveys include much higher sampling coverage of the Triangle survey (25-50%) compared to the ACP survey (approximately 1 - 8%),  much larger area of the ACP survey, and sampling effort is stratified in the ACP survey [@fig-area]. Flying birds, females, broods, and off-transect birds are also recorded on the Triangle survey; whereas, these are not during the ACP survey. In addition, the ACP survey records all waterbird species, but the Triangle survey only records eiders (King and Spectaculed in addition to Steller's). Otherwise, the two survey follow standard aerial waterfowl survey protocols. 
 
 ```{r}
 #| label: fig-area
@@ -50,7 +51,11 @@ trans <- st_read(dsn = "data/Barrow_STEI_standardized_transects_Aug2024.gpx",
   select(Transect = name) |>
   filter(str_sub(Transect, 1, 1) == "A", row_number() > 10)
 triangle <- st_read(dsn = "data/Barrow_Triangle_STEI_Aerial_SA", quiet = TRUE)
-ggplot(data = acp) + geom_sf(aes(fill = Stratum), lwd = 1) + geom_sf(data = trans[c(TRUE, FALSE),], col = "red") + geom_sf(data = trans.acp)
+ggplot(data = acp) + geom_sf(aes(fill = Stratum), lwd = 1) + 
+  geom_sf(data = trans[c(TRUE, FALSE),], col = "red") + 
+  geom_sf(data = trans.acp) + 
+    theme(axis.text.y=element_blank(), 
+        axis.ticks.y=element_blank())
 ```
 
 ### Design-based estimates
@@ -67,7 +72,7 @@ where $A$ is the total area of the study area, $a_i$ is the area of strip transe
 
 I used generalized additive models [GAMs, @wood2017] to estimate eider density as a function of location and time. A GAM can be thought of as a generalized linear mixed model that fits smooth functions (splines) of covarates to predict the response, in addition to standard linear model terms if specified. The optimal degree of smoothing is determined during model fitting. GAMs are widely used in animal density surface modeling (e.g., @miller2013, @amundson2019, and many others).  
 
-To set up the data for model fitting, I divided sampled transects into 1 or 6 km segments and assigned observations of eiders (including observation of zero eiders) to segment centriods. Segments on the boundary of the study area were often smaller due to boundary issues. I then assumed a half strip width of 200m and calculated an area for each segment. Total number of eider observations (pairs or males) were summed for each segment and the coordinates (in isomorphic UTMs) of the centriod were used for spatial location. Year was used as the covariate for temporal effects. The same procedure was used for both the entire ACP and for the Triangle survey, but for the ACP-only model (see below) the segment size for model fitting was 6 km. This was done for computational reasons (time) related to fitting many different models. When Triangle and ACP data were combined into one model, a common 1 km segment size was used. All spatial data manipulation was done using the R package `sf` [@sf]. 
+To set up the data for model fitting, I divided sampled transects into 1 or 6 km segments and assigned observations of eiders (including observation of zero eiders) to segment centriods. Segments on the boundary of the study area were often smaller due to boundary issues. I then assumed a half strip width of 200m and calculated an area for each segment. Total number of eider observations (pairs and males) were summed for each segment and the coordinates (in isomorphic UTMs) of the centriod were used for spatial location. Year was used as the covariate for temporal effects. The same procedure was used for both the entire ACP and for the Triangle survey, but for the ACP-only model (see below) the segment size for model fitting was 6 km. This was done for computational reasons (time) related to fitting many different models. When Triangle and ACP data were combined into one model, a common 1 km segment size was used. All spatial data manipulation was done using the R package `sf` [@sf]. 
 
 I fit a variety of models to explore spatial and temporal effects. The linear predictor for each model was: 
 
@@ -108,9 +113,9 @@ Note that this measure of trend is identical to the slope parameter in a  "log-l
 
 ### Incorporating detection
 
-At the time of this writing, the decoy detection data was not available for analysis from years 2019 to 2023. Therefore I used a detection rate based on estimates from 2018 when the protocol was improved over the first year of the study (2017). The detection analysis was completed by Catherine Bradley (USFWS, retired) and showed that detection rate in 2018 depended only on distance from transect [@bradley2018]. Because distance was not available for observations outside the decoy detection study area (a sub-set of the Triangle area), I calculated the average 'unconditional' detection rate over the distance transect half strip width (Table 3 from  @bradley2018). I also used this same detection rate for the ACP because no better estimate for Steller's Eider is available. The detection rate used here should be viewed as a provisional until a more complete analysis can be conducted incorporating data from 2019 to 2023. As such, it is meant to be the average detection rate over all observations, including the covariates of distance, year, observer, sun angle, and etc. 
+At the time of this writing, the decoy detection data from 2023 was not available for analysis and staff time did not allow analysis of data from years 2017 to 2022. Therefore, I used a detection rate based on available estimates from 2018 when the protocol was improved over the first year of the study (2017). The detection analysis was completed by Catherine Bradley (USFWS, retired) and showed that detection rate in 2018 depended only on distance from transect [@bradley2018]. Because distance was not available for observations outside the decoy detection study area (a sub-set of the Triangle area), I calculated the average 'unconditional' detection rate over the transect half strip width (Table 3 from  @bradley2018). I also used this same detection rate for the ACP because no better estimate for Steller's Eider is available. The detection rate used here should be viewed as provisional until a more complete analysis can be conducted incorporating data from 2019 to 2023. As such, it is meant to be the average detection rate over all observations, including the covariates of distance, year, observer, sun angle, and etc. 
 
-To calculate an average detection rate, I assumed that eiders (detected and undetected) were expected to be uniformly distributed with distance from the transect, which is true given the design of the Triangle and ACP surveys. I then averaged detection and the estimate variance over each of the four distance bins in Table 3 of @bradley2018. Because distance bins were of equal width, detection was estimated as a factor of bin (i.e, a continuous distance function was not estimated), and no other covariates were found important, the mean and variance are a simple equally weighted average over the distance bins. In Table 3 of @bradley2018 only the mean and ninety-five percent credible interval was given, so I approximated the standard error of the estimate in each bin by the range divided by 2*1.96, which is the typical number of standard deviations in the range of a symetric credible interval.  
+To calculate an average detection rate, I assumed that eiders (detected and undetected) were expected to be uniformly distributed with distance from the transect, which is true given the design of the Triangle and ACP surveys. I then averaged detection and the estimate variance over each of the four distance bins in Table 3 of @bradley2018. Because distance bins were of equal width, detection was estimated as a factor of bin (i.e, a continuous distance function was not estimated), and no other covariates were found important, the mean and variance are a simple equally weighted average over the distance bins. In Table 3 of @bradley2018 only the mean and ninety-five percent credible interval was given, so I approximated the standard error of the estimate in each bin by the range divided by 2*1.96, which is the typical number of standard deviations in the range of a symmetric credible interval.  
 
 ```{r}
 #| label: fig-detection
@@ -132,8 +137,7 @@ sdf <- data.frame(Sightability = seq(0, 0.75, length = 10000),
 ggplot(data = sdf, aes(x = Sightability, y = Density)) + geom_area(fill = "orange") + 
   geom_text(aes(x = 0.1, y = 6, label = paste0("Mean = ", round(mP,3)))) + 
   geom_text(aes(x = 0.1, y = 5.5, label = paste0("SD = ", round(sSE,3)))) + 
-  xlab("Detection") + 
-  labs(title = "Detection Prior")
+  xlab("Detection")
 
 ggsave("results/sightability_prior.png")
 
@@ -146,15 +150,15 @@ The posterior population estimate for "indicated breeding birds", accounting for
 $$\hat N_{ij} = 2\hat Y _{ij}/d_{i}.$$
 with $d_i$ sampled from a Beta distribution with the mean and standard deviation above. If detection varies with year, location or other covariates, then the adjustment needs to take place at a lower level of $y$ and $d$, which would vary by year or other covariates. 
 
-## Results
+## Results and Interpretation
 
 ### Observations of Steller's Eider
 
-Observed locations of Steller's Eider across the study area are shown in @fig-observations. Most observations are in the northern coastal area of the Triangle and Teshekpuk Lake area. No observations of Steller's Eider have been made in the two southernmost ACP strata. Observations from the Triangle survey abruptly stop at the southern edge of of Triangle survey area, suggesting that eiders do sometimes exist south of that area than the observations from either survey suggest. @tbl-obs shows the count of Steller's Eider observations by year for both the Triangle and ACP surveys. For the Triangle survey, the count is separated for flying and non-flying birds. Note that about 25% of the total observations in the Triangle are of flying birds. Flying birds are not recorded on the ACP survey. @fig-acpobsyear gives the count of Steller's Eider by year and observation type for the ACP survey. The single observation of "open" was treated as a single in all analyses. 
+Observed locations of Steller's Eider across the study area are shown in @fig-observations. Most observations are in the northern coastal area of the Triangle and Teshekpuk Lake area. No observations of Steller's Eider have been made in the two southernmost ACP strata. Observations from the Triangle survey abruptly stop at the southern edge of of Triangle survey area, suggesting that eiders do sometimes exist south of that area than the observations from either survey suggest. @fig-obs shows the count of Steller's Eider observations by year for both the Triangle and ACP surveys. For the Triangle survey, the count is separated for flying and non-flying birds. Note that about 25% of the total observations in the Triangle are of flying birds. Flying birds are not recorded on the ACP survey. @fig-acpobsyear gives the count of Steller's Eider by year and observation type for the ACP survey. The single observation of "open" was treated as a single in all analyses. 
 
 ```{r}
 #| label: fig-observations
-#| fig-cap: "Observed Steller's eider during the ACP (2007-2023) and Triangle (1999-2023) surveys."
+#| fig-cap: "Observed Steller's eider during the ACP (2007-2024) and Triangle (1999-2023) surveys."
 #need to plot bird locations
 path <- "../ACP-Mapping/Data/ACP_2023/analysis_output/Bird-QC-Obs-2024-11-12.csv"
 acp.obs <- read_csv(file = path) %>%
@@ -171,7 +175,9 @@ abr.obs <- readxl::read_xlsx(path = "data/STEI_obs_1999-2023.xlsx",
   mutate(Survey = "Triangle") |>
   select(Survey)
 df <- rbind(abr.obs, select(acp.obs, Survey))
-ggplot(data = acp) + geom_sf() + geom_sf(data = df, aes(col = Survey))
+ggplot(data = acp) + geom_sf() + geom_sf(data = df, aes(col = Survey)) + 
+    theme(axis.text.y=element_blank(), 
+        axis.ticks.y=element_blank())
 # ggplot(data = acp) + geom_sf() + 
 #    geom_sf(data = abr.obs, aes(col = Survey)) + 
 #    geom_sf(data = acp.obs, aes(col = Obs_Type))
@@ -190,8 +196,8 @@ ggplot(df, aes(fill=Type, y=Number, x=factor(Year))) +
 ```
 
 ```{r}
-#| label: tbl-obs
-#| tbl-cap: Number of Steller's Eider observations by year for the ACP and Triangle surveys. 
+#| label: fig-obs
+#| fig-cap: Number of Steller's Eider observations by year for the ACP and Triangle surveys. 
 
 acp.obs <- read_csv(file = path) %>%
   filter(Species == "STEI") |>
@@ -212,9 +218,15 @@ df <- full_join(abr.nofliers, abr.flier) |> mutate_all(~replace(., is.na(.), 0))
   full_join(acp.obs) |> mutate_at(4, ~replace(., Year > 2006 & is.na(.) & 
                                                 Year != 2021, 0)) |>
   rbind(c(2020, NA, NA, NA)) |>
+  mutate_at(2:3, ~replace(., Year == 2009 & is.na(.), 0)) |> #no obs eiders on ABR for 2009
   arrange(Year)
-kableExtra::kable(df)
-
+#kableExtra::kable(df)
+write_csv(df, file="results/obs_summary.csv")
+df2 <- pivot_longer(df, 2:4, names_to="Survey", values_to = "Number")
+ggplot(data = df2, aes(x=Year, y = Number, group = Survey, col = Survey)) + 
+  geom_line() + geom_point() + 
+  scale_x_continuous(breaks=seq(2000, 2024, by = 4))
+ggsave(file="results/obs_summary.png")
 ```
 
 ### Design-based estimates
@@ -401,7 +413,7 @@ write_csv(df, file = "results/design_ABR.csv")
 
 ```{r}
 #| label: fig-designACP
-#| fig-cap: "Design-based estimates in the Arctic Coastal Plain survey area. No flying birds are recorded in this survey. No detection correction was applied."
+#| fig-cap: "Design-based estimates in the Arctic Coastal Plain survey area. Confidence intervals have been truncated at zero. No flying birds are recorded in this survey. No detection correction was applied."
 
 # calculate design-based estimate
 # df <- AKaerial::ACPHistoric$combined |>
@@ -476,9 +488,9 @@ write_csv(birds2, file = "results/design_ACP.csv")
 ```
 
 
-Design-based estimates for the Triangle survey area are shown in @fig-design and for the ACP in @fig-designACP. No survey was conducted in 2020 for the Triangle survey or in 2020 and 2021 for the ACP. Estimate are presented for non-flying (a) and flying (b) birds [@fig-design]. Estimates for flying birds are higher because approximately 25% of the observed birds are flying. Standard waterfowl survey methods do not record flying birds because it is not known if they are associated with the survey area and flux causes a high bias in estimates due to birds moving into the strip as the observer moves along. On the ACP [@fig-designACP] flying birds are not recorded for these reasons. Variance of estimates is much larger for the ACP than for the Triangle survey.  
+Design-based estimates for the Triangle survey area are shown in @fig-design and for the ACP in @fig-designACP. No survey was conducted in 2020 for the Triangle survey or in 2020 and 2021 for the ACP. Estimate are presented for non-flying (a) and flying (b) birds (@fig-design). Estimates for flying birds are higher because approximately 25% of the observed birds are flying. Standard waterfowl survey methods do not record flying birds because it is not known if they are associated with the survey area and flux causes a high bias in estimates due to birds moving into the strip as the observer moves along. On the ACP (@fig-designACP) flying birds are not recorded for these reasons. Variance of estimates is much larger for the ACP than for the Triangle survey.  
 
-Design based estimates make minimal assumptions and provide an important check on model-based estimates. Two important assumptions behind design-based estimates are that (1) the survey design is unbiased (random or systematic selection of sampling units, here transects) and (2) the survey was implemented as designed. These assumptions are met in these surveys. An additional often unstated assumption is that the response is measured without error. In this case, measurement errors include a large detection bias and, presumably less often, species miss-identification. Detection bias causes a lower mean response and increased variance in response for intermediate (~50%) detection rates. Finally, design based estimates are based on estimating a mean response across all sampled transects, and then using statistical sampling theory to derive estimator variance. This works well for common species and large sample size (many transects), but for rare species that might not be encountered on any transects during a sample, the estimate and its variance is necessarily zero when there are no detections even when the species might ave existed in the survey area. This might have been the case in 2009 on the Triangle area [@fig-design] and in 2010 for all strata of the ACP [@fig-designACP], and was the case in 2, 10, 16 and 16 years out of 16 for the High, Teshekpuk, and Medium, and Low strata of the ACP. 
+Design based estimates make minimal assumptions and provide an important check on model-based estimates. Two important assumptions behind design-based estimates are that (1) the survey design is unbiased (random or systematic selection of sampling units, here transects) and (2) the survey was implemented as designed. These assumptions are met in these surveys. An additional often unstated assumption is that the response is measured without error. In this case, measurement errors include a large detection bias and, presumably less often, species miss-identification. Detection bias causes a lower mean response and increased variance in response for intermediate (~50%) detection rates. Finally, design based estimates are based on estimating a mean response across all sampled transects, and then using statistical sampling theory to derive estimator variance. This works well for common species and large sample size (many transects), but for rare species that might not be encountered on any transects during a sample, the estimate and its variance is necessarily zero when there are no detections even when the species might ave existed in the survey area. This might have been the case in 2009 on the Triangle area (@fig-design) and in 2010 for all strata of the ACP (@fig-designACP), and was the case in 2, 10, 16 and 16 years out of 16 for the High, Teshekpuk, and Medium, and Low strata of the ACP, respectively. 
 
 ### Model-based Estimates: Triangle
 
@@ -529,7 +541,7 @@ draw(fit2, select = 3, dist = 0.02, rug = FALSE) +
       axis.ticks.y=element_blank()) 
 ```
 
-Spatial density of Steller's Eider across the Triange after removing the effects of year and the space-by-year interaction (i.e., the average or partial effect of location) is shown in @fig-densityABR. Relatively high densities have occured in the north and moderate densities in the east and far southwest. With the space-by-year effect, however, these areas of higher densities in the south have decreased.  
+Spatial density of Steller's Eider across the Triange after removing the effects of year and the space-by-year interaction (i.e., the average or partial effect of location) is shown in @fig-densityABR. Relatively high densities have occurred in the north and moderate densities in the east and far southwest. With the space-by-year effect, however, these areas of higher densities in the south have decreased.  
 
 ![Predicted average density of Steller's Eider after removing the effect of year and space-by-year intereaction in the Triangle survey area.](results/average_density_ABR.png){#fig-densityABR}
 
@@ -541,7 +553,7 @@ Population estimates across the Triangle survey area by year for indicated breed
 
 ![](results/ABR_withD_ibb_year.png){#fig-abrA}
 
-Posterior estimates of Steller's Eider in the Triangle survey area without accounting for detection (a) and after applying a detection correction (b). The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95% credible interval.
+Posterior estimates of Steller's Eider in the Triangle survey area without accounting for detection (a) and after applying a detection correction (b). These estimates include flying and non-flying birds. The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95% credible interval.
 :::
 
 ```{r}
@@ -553,6 +565,14 @@ post <- readRDS(file = "results/ABR_post.RDS")
 m = round(mean(apply(post[,-c(1:5)], 1, mean)), 1)
 q = round(quantile(apply(post[,-c(1:5)], 1, mean), 
                    probs=c(0.025, 0.05, 0.5, 0.975)), 1)
+#find year-specific summaries for csv output
+df <- data.frame(Year = 1999:2023,
+                   Mean = apply(post, 2, mean), 
+                   sd = apply(post, 2, sd), 
+                   median = apply(post, 2, median), 
+                   upper = apply(post, 2, quantile, probs = 0.975),
+                   lower = apply(post, 2, quantile, probs = 0.025))
+write_csv(df, file = "results/model_est_ABR.csv")
 
 df <- data.frame(NULL)
 tyears <- dim(post)[2]
@@ -579,7 +599,7 @@ write_csv(df, file = "results/trend_ABR.csv")
 
 ### Model-based Estimates: ACP
 
-Models fit to the ACP data showed that model with a random effect of year, rather than a smooth of year, fit best (@tbl-modelsACP). In addition, models with a random observer effect contributed nothing to improvement in AIC (@tbl-modelsACP). Upon examining model summary statistics, models with a smooth of year shrunk to a straight line and observer effect variance was essentially zero (results not shown).  These results are likely due to the very few observations of Steller's Eider on the ACP survey. Spatial effects showed a simple decline in eider density as distance from the coast increase (@fig-modelACP a), and temporal effects that varied greatly on the log scale (@fig-modelACP b).  
+Models fit to the ACP data showed that a model with a random effect of year, rather than a smooth of year, fit best (@tbl-modelsACP). In addition, models with a random observer effect contributed nothing to improvement in AIC (@tbl-modelsACP). Upon examining model summary statistics, models with a smooth of year shrunk to a straight line and observer effect variance was essentially zero (results not shown).  These results are likely due to the very few observations of Steller's Eider on the ACP survey. Spatial effects showed a simple decline in eider density as distance from the coast increase (@fig-modelACP a), and temporal effects that varied greatly on the log scale (@fig-modelACP b).  
 
 ```{r}
 #| label: tbl-modelsACP
@@ -618,8 +638,9 @@ ggplot(data = df, aes(x = Year, y = Effect)) + geom_point() +
   labs(title = "s(fYear)")
 ```
 
-Posterior simulation of the year-specific total across the whole ACP are shown in @fig-yearACP without a detection correction (a) and with a detection correction (b). The population appear to fluctuate in a similar manner as in the Triangle survey estimates, but the year-specific estimate for the ACP are much less precise. Because the best model contained only a simple random effect and the survey was not completed in 2020 and 2021, predictions were not made for these years using this model. Such prediction could be made by simulating the variance of the random effect but this would simply give an estimate that spans the range of historical estimates. 
-Note that year-specific estimates of the total number of eider across the ACP  based on model $M3$ (@fig-acpA) are less extreme than those based on design-based estimates (@fig-designACP). That is, the model based estimate given lower number in high abundance year and higher estimates in low abundance years compared to the model-based estimates. This is do to the 'shrinkage' or regularization of the year random effect. In general, design based estimate might over estimate the eider population when one or more eider happen to be observed on a transect in one year and underestimate when one or more eiders are not observed on a transect, even though they are in the study area. 
+Posterior simulation of the year-specific total across the whole ACP are shown in @fig-yearACP without a detection correction (a) and with a detection correction (b). The population appears to fluctuate in a similar manner as in the model fit to Triangle survey data, but the year-specific estimates for the ACP are much less precise. Because the best model contained only a simple random effect and the survey was not completed in 2020 and 2021, predictions were not made for these years using this model. Such predictions could be made by simulating random effects for these years but this would simply give an estimate that spans the range of historical estimates. 
+
+Note that year-specific estimates of the total number of eiders across the ACP  based on model $M3$ (@fig-acpA) are less extreme than those based on design-based estimates (@fig-designACP). That is, the model based estimate given lower number in high abundance year and higher estimates in low abundance years compared to the model-based estimates. This is do to the 'shrinkage' or regularization of the year random effect. In general, design based estimate might over estimate the eider population when one or more eider happen to be observed on a transect in one year and underestimate when one or more eiders are not observed on a transect, even though they are in the study area. 
 
 ::: {#fig-yearACP layout-nrow=2}
 
@@ -647,6 +668,14 @@ rm(tmp)
 m = round(mean(apply(post[,], 1, mean, na.rm = TRUE)), 1)
 q = round(quantile(apply(post[,], 1, mean, na.rm = TRUE), 
                    probs=c(0.025, 0.05, 0.5, 0.975)), 1)
+#find year-specific summaries for csv output
+df <- data.frame(Year = 2007:2024,
+                   Mean = apply(post, 2, mean, na.rm = TRUE), 
+                   sd = apply(post, 2, sd, na.rm = TRUE), 
+                   median = apply(post, 2, median, na.rm = TRUE), 
+                   upper = apply(post, 2, quantile, probs = 0.975, na.rm = TRUE),
+                   lower = apply(post, 2, quantile, probs = 0.025, na.rm = TRUE))
+write_csv(df, file = "results/model_est_ACP.csv")
 
 df <- data.frame(NULL)
 tyears <- dim(post)[2]
@@ -703,6 +732,14 @@ post <- readRDS(file = "results/Comb_post.RDS")
 m = round(mean(apply(post[,], 1, mean, na.rm = TRUE)), 1)
 q = round(quantile(apply(post[,], 1, mean, na.rm = TRUE), 
                    probs=c(0.025, 0.05, 0.5, 0.975)), 1)
+#find year-specific summaries for csv output
+df <- data.frame(Year = 1999:2024,
+                   Mean = apply(post, 2, mean), 
+                   sd = apply(post, 2, sd), 
+                   median = apply(post, 2, median), 
+                   upper = apply(post, 2, quantile, probs = 0.975),
+                   lower = apply(post, 2, quantile, probs = 0.025))
+write_csv(df, file = "results/model_est_Comb.csv")
 
 df <- data.frame(NULL)
 tyears <- dim(post)[2]
@@ -729,7 +766,7 @@ write_csv(df, file = "results/trend_Comb.csv")
 
 ## Results summary
 
-Posterior mean population size over the last 20 years for Triangle survey only, (excluding 2020), 18 years for ACP survey only (excluding 2020 and 2021), and 20 years for the combined Triangle and ACP survey data are shown in @tlb-sum. 
+Posterior mean population size over the last 20 years for Triangle survey only, (excluding 2020), 18 years for ACP survey only (excluding 2020 and 2021), and 20 years for the combined Triangle and ACP survey data are shown in @tbl-sum. 
 
 ```{r}
 #| label: tbl-sum
@@ -764,11 +801,10 @@ df <- rbind(df, data.frame(Survey = "Combined",
 kableExtra::kable(df, row.names = FALSE, digits = 1)
 ```
 
-## Discussion
-
-
-
 ## References
 
 ::: {#refs}
 :::
+
+## Supplimental Material
+
