@@ -1,8 +1,84 @@
+@Manual{r-wavelet,
+  title = {{WaveletComp}: Computational Wavelet Analysis},
+  author = {Angi Roesch and Harald Schmidbauer},
+  year = {2018},
+  note = {R package version 1.1},
+  url = {https://CRAN.R-project.org/package=WaveletComp},
+}
+
+@article{sauer2002hierarchical,
+  title={Hierarchical modeling of population stability and species group attributes from survey data},
+  author={Sauer, John R and Link, William A},
+  journal={Ecology},
+  volume={83},
+  number={6},
+  pages={1743--1751},
+  year={2002},
+  publisher={Wiley Online Library}
+}
+
+@article{rosenberg2019decline,
+  title={Decline of the North American avifauna},
+  author={Rosenberg, Kenneth V and Dokter, Adriaan M and Blancher, Peter J and Sauer, John R and Smith, Adam C and Smith, Paul A and Stanton, Jessica C and Panjabi, Arvind and Helft, Laura and Parr, Michael and others},
+  journal={Science},
+  volume={366},
+  number={6461},
+  pages={120--124},
+  year={2019},
+  publisher={American Association for the Advancement of Science}
+}
+
+@article{smith2021north,
+  title={North American Breeding Bird Survey status and trend estimates to inform a wide range of conservation needs, using a flexible Bayesian hierarchical generalized additive model},
+  author={Smith, Adam C and Edwards, Brandon PM},
+  journal={The Condor},
+  volume={123},
+  number={1},
+  pages={duaa065},
+  year={2021},
+  publisher={Oxford University Press US}
+}
+
+@article{clark2023dynGAMs,
+author = {Clark, Nicholas J. and Wells, Konstans},
+title = {Dynamic generalised additive models (DGAMs) for forecasting discrete ecological time series},
+journal = {Methods in Ecology and Evolution},
+volume = {14},
+number = {3},
+pages = {771-784},
+keywords = {dynamic factor model, ecological forecasting, generalised additive model, hierarchical model, JAGS, R package, Stan},
+doi = {https://doi.org/10.1111/2041-210X.13974},
+url = {https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.13974},
+eprint = {https://besjournals.onlinelibrary.wiley.com/doi/pdf/10.1111/2041-210X.13974},
+abstract = {Abstract Generalised additive models (GAMs) are increasingly popular tools for estimating smooth nonlinear relationships between predictors and response variables. GAMs are particularly relevant in ecology for representing hierarchical functions for discrete responses that encompass complex features including zero inflation, truncation and uneven sampling. However, GAMs are less useful for producing forecasts as their smooth functions provide unstable predictions outside the range of training data. We introduce dynamic generalised additive models (DGAMs), where the GAM linear predictor is jointly estimated with unobserved dynamic components to model time series that evolve as a function of nonlinear predictor associations and latent temporal processes. These models are especially useful for analysing multiple series, as they can estimate hierarchical smooth functions while learning complex temporal associations via dimension-reduced latent factor processes. We implement our models in the mvgam R package, which estimates unobserved parameters for smoothing splines and latent temporal processes in a probabilistic framework. Using simulations, we illustrate how our models outperform competing formulations in realistic ecological forecasting tasks while identifying important smooth predictor functions. We use a real-world case study to highlight some of mvgam's key features, which include functions for calculating correlations among series' latent trends, performing model selection using rolling window forecasts and posterior predictive checks, online data augmentation via a recursive particle filter and visualising probabilistic uncertainties for smooth functions and predictions. Dynamic GAMs (DGAMs) offer a solution to the challenge of forecasting discrete time series while estimating ecologically relevant nonlinear predictor associations. Our Bayesian latent factor approach will be particularly useful for exploring competing dynamic ecological models that encompass hierarchical smoothing structures while providing forecasts with robust uncertainties, tasks that are becoming increasingly important in applied ecology.},
+year = {2023}
+}
+
+@article{quakenbush2004breeding,
+  title={Breeding biology of Steller's eiders (Polysticta stelleri) near Barrow, Alaska, 1991-99},
+  author={Quakenbush, Lori and Suydam, Robert and Obritschkewitsch, Tim and Deering, Michele},
+  journal={Arctic},
+  pages={166--182},
+  year={2004},
+  publisher={JSTOR}
+}
+
+@article{wood2011fast,
+  title={Fast stable restricted maximum likelihood and marginal likelihood estimation of semiparametric generalized linear models},
+  author={Wood, Simon N},
+  journal={Journal of the Royal Statistical Society Series B: Statistical Methodology},
+  volume={73},
+  number={1},
+  pages={3--36},
+  year={2011},
+  publisher={Oxford University Press}
+}
+
 @techreport{steiSSA2019,
-  title       = "Status assessment of the Alaska-breeding population of Steller’s Eiders",
-  author      = "U.S. Fish and Wildlife Service",
+  title       = {Status assessment of the {Alaska-breeding} population of {Steller’s Eiders}},
+  author      = {{U.S. Fish and Wildlife Service}},
   institution = "Fairbanks Fish and Wildlife Field Office",
-  address     = "Fairbanks, AK",
+  address     = {Fairbanks, {AK}},
   number      = "Version 1",
   year        = 2019,
   month       = Mar
@@ -173,8 +249,8 @@ url = {https://doi.org/10.32614/RJ-2018-009},
     url       = {https://github.com/bbolker/bbmle}
 }
 
-@misc{r-mgcv,
-    author    = {Simon Wood},
+@Manual{r-mgcv,
+    author    = {Simon N. Wood},
     title     = {mgcv: Mixed GAM Computation Vehicle with Automatic Smoothness Estimation},
     year      = {2021},
     note      = {R package version 1.8-36},
@@ -190,12 +266,12 @@ url = {https://doi.org/10.32614/RJ-2018-009},
     url = {https://yihui.org/knitr/},
 }
 
-@article{wood2017,
-    author =       {Simon Wood},
-    title =        {Generalized Additive Models: An Introduction with R, Second Edition},
-    year =         {2017},
-    publisher =    {Chapman and Hall/CRC},
-    address =      {Boca Raton, Florida}
+@book{wood2017,
+    author = {Simon N. Wood},
+    title = {Generalized Additive Models: An Introduction with R, Second Edition},
+    year = {2017},
+    publisher = {Chapman and Hall/CRC},
+    address = {Boca Raton, Florida}
 }
 
 @unpublished{cws1987,
@@ -228,7 +304,7 @@ url = {https://doi.org/10.32614/RJ-2018-009},
   publisher={CRC press}
 }
 
-@article{buckland2001,
+@book{buckland2001,
   title={Introduction to distance sampling: estimating abundance of biological populations},
   author={Buckland, Stephen T and Anderson, David R and Burnham, Kenneth Paul and Laake, Jeffrey Lee and Borchers, David Louis and Thomas, Leonard and others},
   year={2001},
