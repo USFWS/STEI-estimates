@@ -76,7 +76,7 @@ ggplot(data = acp) + geom_sf(aes(fill = Stratum), lwd = 1) +
 
 ### Design-based estimates
 
-I calculated a design-based estimate using formula "R3" of Fewster et al. [-@fewster2009, also see @buckland2001, p. 79], modified for strip transects. A ratio estimator, which is more common for strip-transect surveys [@r-akaerial], was investigated but found to be poor due to the distribution of observations and the triangle shape of the survey area, where most observations are on short transects in the north and longer transects in the south rarely have observed animals. This nullifies any advantage of a ratio estimator, which can produce a better estimate when the transect length and number of encounters are positively related [@thompson2012]. The point estimate was calculated as 
+I calculated a design-based estimate using formula "R3" of Fewster et al. [-@fewster2009; also see @buckland2001, p. 79], modified for strip transects. A ratio estimator, which is more common for strip-transect surveys [@r-akaerial], was investigated but found to be poor due to the distribution of observations and the triangle shape of the survey area, where most observations are on short transects in the north and longer transects in the south rarely have observed animals. This nullifies any advantage of a ratio estimator, which can produce a better estimate when the transect length and number of encounters are positively related [@cochran1977; @thompson2012]. The point estimate was calculated as 
 
 $$\hat N = A \frac{\Sigma_i n_i}{\Sigma_i a_i}$$
 and the variance of $\hat N$ was calculated as 
@@ -835,7 +835,7 @@ wt.avg(my.w, maximum.level = maximum.level)
 
 The Steller's Eider population is clearly fluctuating between short periods of increase and decrease with a period of approximately 5-7 years (@fig-yearComb). In order to quantify and test for a period in the eider time series, I used a wavelet analysis to exact the wave period power spectra and test for statistical significance using R package `WaveletComp` [@r-wavelet]. The power spectrum revealed a clear band with a period around 6 years (@fig-wavelet). The average power across years gave a maximum power at period `r round(period.max, 2)` (95% CI: `r round(min(period95), 2)`, `r round(max(period95), 2)`). Such periodic cycles will cause the exact estimate of trend to depend on the relative location within the period of the beginning and end time points used for the calculation. Thus, when calculating trend, it might be useful to control for period so that start and end points reference the same relative position of the cycle. That is, when using the results present here for trend, use only integer multiples of the period (e.g., 6.39, 12.78, 19.17, and so on). 
 
-## Results summary
+### Results summary
 
 Posterior mean population size over the last 20 years for Triangle survey only, (excluding 2020), 18 years for ACP survey only (excluding 2020 and 2021), and 20 years for the combined Triangle and ACP survey data are shown in @tbl-sum. 
 
