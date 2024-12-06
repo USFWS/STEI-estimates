@@ -1,7 +1,9 @@
 #combine ABR and ACP data set, fit GAM model to combined data and predict
-# Then, drop out ABR transects, refit model, and look at estimate precision
 #do not have observer data for ABR triangle data, therefore use Observer = "ABR". 
-# use only non-flying birds to be consistent with ACP
+# update Dec. 2024: learned that flying birds should be included to be 
+#  consistent with ACP
+#update below to include flying birds as these are recorded with same protocol 
+#  as on ACP
 library(tidyverse)
 library(readxl)
 library(sf)
@@ -70,7 +72,7 @@ saveRDS(df, file = "data/segmentized_acp_data.RDS")
 ####################
 rm(list=ls())
 ## load ABR data, data object from code in wrangle_ABR.R
-abr <- readRDS(file = "data/segmentized_triangle_data_nofliers.RDS")
+abr <- readRDS(file = "data/segmentized_triangle_data_fliers.RDS")
 ####################
 #load ACP data
 acp <- readRDS(file = "data/segmentized_acp_data.RDS")
@@ -91,11 +93,9 @@ ggplot(data = filter(tmp, Survey == "ACP"), aes(x=X, y=Y)) + geom_point() +
 rm(tmp)
 #looks good
 #now fit model
-#I fit a model with an Observer effect, because in the ACP data, this model was 
-#  essential identical to the best model delta AIC < 1 and I wanted the ABR 
-#  Survey (models as observer = "999") to be estimated. 
-#  Count ~ s(X, Y, bs = "ds", k = 200, m = c(1, 0.5)) + s(Year, k = 20) + 
-#    s(Observer, bs = "re")
+#I fit a model with an survey effect so that any difference between surveys can 
+#  be estimated. An Observer effect could also be used, but as of December 2024,
+#  I did not have observer data for the ABR data. 
 library(mgcv)
 df$Observer <- factor(df$Observer)
 df$fYear <- factor(df$Year)
@@ -107,17 +107,19 @@ fit2 <- gam(Count~survey + s(X, Y, bs="tp", k = 200) + s(Year, k = 20) +
               ti(X, Y, Year, k = c(50, 5), d=c(2, 1), bs = c("tp", "cr")),
             offset = logArea, family = nb, method = "REML", data = df)
 saveRDS(fit2, file = "results/fit2.comb.RDS")
+fit1 <- readRDS(file = "results/fit1.comb.RDS")
+fit2 <- readRDS(file = "results/fit2.comb.RDS")
 ##plot models
 library(gratia)
 library(DHARMa)
 draw(fit2, select = 1, rug=FALSE)
 draw(fit2, select = 2, rug=FALSE)
 draw(fit2, select = 3, rug=FALSE)
-draw(fit2, select = 4, rug=FALSE)
 draw(fit1, select = 1, rug=FALSE)
 draw(fit1, select = 2, rug=FALSE)
 summary(fit1)
 summary(fit2)
+AIC(fit1, fit2)
 ################################################################################
 ## predict and map
 library(mgcv)
@@ -154,11 +156,11 @@ p2 <- ggplot(data = plotdat) + geom_sf(aes(fill=CV), col = NA) +
 print(p2)
 ggsave("results/combined_map_cv.png")
 min(plotdat$CV)
-#[1] 0.2765243
+#[1] 0.2408627
 #zoom to triangle
 plotdat <- st_transform(plotdat, crs = 4326)
 ggplot(data = plotdat) + geom_sf(aes(fill=fit), col = NA) +
-  scale_fill_viridis_c(name = "Expected \n density") +
+  scale_fill_viridis_c(name = "Expected \n density (km^-2)") +
   labs(title = "STEI in 2013") + 
   coord_sf(xlim = c(-157.5, -155.5), ylim = c(70.9, 71.4), expand = FALSE)
 ggsave("results/combined_map_zoomed.png")
@@ -254,8 +256,8 @@ gg <- ggplot(data = sumdf) +
 print(gg)
 ggsave("results/combined_year_noD.png")
 #that seems to work for fit1
-#wow, MH didn't work at all for fit2, must be the s-t interact in the model
-#even filter the posterior after the MH step didn't work. Abandone fit2
+#wow, MH didn't work at all for fit2, must be the s-t interaction in the model
+#even filter the posterior after the MH step didn't work. Abandon fit2
 ################################################################################
 #add detection
 detdf <- data.frame(Bin = 1:4, p = c(0.514, 0.457, 0.143, 0.114), 
@@ -291,7 +293,7 @@ gg <- ggplot(data = sumdf) +
   geom_line(aes(x = Year, y = Mean)) + 
   geom_line(aes(x = Year, y = median), linetype = "dashed") + 
   scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
-  ylab("Indicated Breeding Bird")
+  ylab("Indicated Breeding Birds")
 print(gg)
 ggsave("results/combined_year_withD.png")
 saveRDS(post, file = "results/Comb_post.RDS")
