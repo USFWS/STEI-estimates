@@ -1,7 +1,3 @@
----
-title: Code for Steller's Eider (*Polysticta stelleri*) population and density estimates from the Arctic Coastal Plain and Utqiaġvik Triangle surveys
----
-
 <!-- badges: start -->
 
 <!-- For more info: https://usethis.r-lib.org/reference/badges.html -->
@@ -10,11 +6,13 @@ title: Code for Steller's Eider (*Polysticta stelleri*) population and density e
 
 <!-- badges: end -->
 
+## Code for Steller's Eider (*Polysticta stelleri*) population and density estimates from the Arctic Coastal Plain and Utqiaġvik Triangle surveys
+
 ## Overview
 
 Code here supports the results found in the report:  
 
-> Osnas, E.E. 2024. Steller's Eider (*Polysticta stelleri*) population and density estimates from the Arctic Coastal Plain and Utqiaġvik Triangle surveys using generalized additive models. US Fish and Wildlife Service, Division of Migratory Bird Management, Anchorage, AK.
+> Osnas, E.E. 2024. Steller's Eider (*Polysticta stelleri*) population and density estimates from the Arctic Coastal Plain and Utqiaġvik Triangle surveys using generalized additive models. US Fish and Wildlife Service, Division of Migratory Bird Management, Anchorage, AK, [https://doi.org/10.7944/3vzp-0r93](https://doi.org/10.7944/3vzp-0r93).
 
 A brief description of each code file is below. They are listed in the order they should be run to produce the report. See comments in code files for more information. 
 

@@ -299,7 +299,100 @@ ggsave("results/combined_year_withD.png")
 saveRDS(post, file = "results/Comb_post.RDS")
 #find long term posterior mean and CI
 # q = round(quantile(apply(post[,-c(1:5)], 1, mean), probs=c(0.025, 0.05, 0.5, 0.975)), 1)
+################################################################################
+#  Calculate population outside Triangle
+#read model fit object
+library(tidyverse)
+library(mgcv)
+library(sf)
+fit <- readRDS(file = "results/fit1.comb.RDS")
+#ACP study area
+acp <- st_read(dsn="../ACP-Mapping/Data/ACP_2023/analysis_output/ACP_DesignStrata_QC.gpkg")
+#make grid
+source("https://raw.githubusercontent.com/USFWS/ACP-Mapping/main/map_density_functions.R")
+acp <- select_area(area = acp, select = "all") %>%
+  st_transform(crs=3338)
+# read in Triangle survey area:
+triangle <- st_read(dsn = "data/Barrow_Triangle_STEI_Aerial_SA") |>
+  st_transform(crs = 3338)
+outside <- st_difference(acp, triangle)
+ggplot(data = outside) + geom_sf()
+#clean up the little areas
+outside <- st_cast(outside, "POLYGON") |>
+  mutate(ID = factor(row_number())) |>
+  select(ID)
+outside <- mutate(outside, Area = units::set_units(st_area(outside), "km^2")) |>
+  filter(Area > units::set_units(10, "km^2"))
+ggplot(data = outside) + geom_sf(aes(fill=ID)) #100 km^2 is right
+outside <- filter(outside, Area > units::set_units(100, "km^2"))
+ggplot(data = outside) + geom_sf(aes(fill=ID))
+#make grid
+outside <- select_area(area = outside, select = "all") %>%
+  st_transform(crs=3338)
+grid <- st_intersection(outside, st_make_grid(x=outside, cellsize = 1000)) %>%
+  mutate(Sample.Label = row.names(.), Grid.Area = st_area(.))
+newdat <- st_centroid(grid) %>%
+  st_coordinates() %>%
+  as.data.frame() %>%
+  mutate(Observer = "HMW", survey = "ABR", logArea = 0, Year = 2013) 
+library(units)
+newdat$Area <- drop_units(set_units(grid$Grid.Area, "km^2"))
+df <- data.frame(NULL)
+for(i in 1999:2024){
+  df <- rbind(df, mutate(newdat, Year = i))
+}
+Nsamples <- 500
+post <- matrix(0, Nsamples, length(unique(df$Year)))
 
+Xp <- predict(fit, type="lpmatrix", newdata=df,
+              newdata.guaranteed=TRUE)
+b <- gam.mh(fit, ns=3000, thin = 2, rw.scale = 0.02)
+b <- b$bs
+plot(b[,1])
+plot(b[,2])
+plot(b[,200])
+hist(b[,1])
+b <- b[sample(750:dim(b)[1], Nsamples),] #just to scramble over any autocorreclation, 
+#  using 750 as start to avoid a long autocorrelated chains before that section
+post <- matrix(0, Nsamples, length(unique(df$Year)))
+#add detection
+detdf <- data.frame(Bin = 1:4, p = c(0.514, 0.457, 0.143, 0.114), 
+                    lower = c(0.338, 0.217, 0.048, 0.026), 
+                    upper=c(0.689, 0.717, 0.306, 0.310))
+mP <- mean(detdf$p)
+sSE <- sqrt(mean( ((detdf$upper - detdf$lower)/(2*1.96))^2 ))
+#method of moments for Beta distribution
+shape1 = mP*( mP*(1-mP)/sSE^2 - 1)
+shape2 = (1 - mP)*( mP*(1-mP)/sSE^2 - 1)
+s <- rbeta(Nsamples, 
+           shape1 = shape1, 
+           shape2 = shape2)
+for(j in 1:Nsamples ){
+  p <- exp(Xp%*%b[j,]) * as.vector(df$Area) #replicate of prediction at all points
+  post[j,] <- cbind(df, p) %>%
+    group_by(Year) %>%
+    summarize( Total = sum(2*p/s[j])) %>% #INDICTED BIRDS!!!
+    ungroup() %>%
+    select(Total) %>%
+    unlist()
+}
+#summarize
+sumdf <- data.frame(Year = min(fit$model$Year):max(fit$model$Year),
+                    Mean = apply(post, 2, mean), 
+                    sd = apply(post, 2, sd), 
+                    median = apply(post, 2, median), 
+                    upper = apply(post, 2, quantile, probs = 0.975),
+                    lower = apply(post, 2, quantile, probs = 0.025))
+#plot
+gg <- ggplot(data = sumdf) + 
+  geom_ribbon(aes(x = Year, ymin = lower, ymax = upper), fill = "orange", alpha = 0.5) + 
+  geom_line(aes(x = Year, y = Mean)) + 
+  geom_line(aes(x = Year, y = median), linetype = "dashed") + 
+  scale_x_continuous(breaks = seq(1999, 2025, by = 2)) + 
+  ylab("Indicated Breeding Birds")
+print(gg)
+ggsave("results/combined_year_withD_NoTri.png")
+saveRDS(post, file = "results/Comb_NoTri_post.RDS")
 # ################################################################################
 # #as above but limit spatial extent to ACP "High" and "Tesh High" strata.
 # #  above posteriors are very highly skewed to large numbers of eiders
