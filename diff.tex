@@ -1,0 +1,2091 @@
+% Options for packages loaded elsewhere
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL STEI__report_plos_reformat.tex           Thu Jan 22 14:45:55 2026
+%DIF ADD STEI__report_plos_reformat_revised.tex   Thu Mar 26 09:31:08 2026
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+
+
+\PassOptionsToPackage{table}{xcolor}
+
+\documentclass[
+  10pt,
+  letterpaper,
+]{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+% Use adjustwidth environment to exceed column width (see example table in text)
+\usepackage{changepage}
+
+% marvosym package for additional characters
+\usepackage{marvosym}
+
+% cite package, to clean up citations in the main text. Do not remove.
+% Using natbib instead
+% \usepackage{cite}
+
+% Use nameref to cite supporting information files (see Supporting Information section for more info)
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% ligatures disabled
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% create "+" rule type for thick vertical lines
+\newcolumntype{+}{!{\vrule width 2pt}}
+
+% create \thickcline for thick horizontal lines of variable length
+\newlength\savedwidth
+\newcommand\thickcline[1]{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \cline{#1}%
+  \noalign{\vskip\arrayrulewidth}%
+  \noalign{\global\arrayrulewidth\savedwidth}%
+}
+
+% \thickhline command for thick horizontal lines that span the table
+\newcommand\thickhline{\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+\hline
+\noalign{\global\arrayrulewidth\savedwidth}}
+
+% Text layout
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in 
+\textheight 8.75in
+
+% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
+% Captions will be left justified
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
+\renewcommand{\figurename}{Fig}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+% Header and Footer with logo
+\usepackage{lastpage,fancyhdr}
+\usepackage{epstopdf}
+%\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+%\setlength{\headheight}{27.023pt}
+%\lhead{\includegraphics[width=2.0in]{PLOS-submission.eps}}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\today}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{anyfontsize}
+\usepackage{multirow}
+\usepackage{setspace}
+\doublespacing
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+%DIF 173c173
+%DIF <   \renewcommand*\figurename{Figure}
+%DIF -------
+  \renewcommand*\figurename{Fig} %DIF > 
+%DIF -------
+\else
+%DIF 175c175
+%DIF <   \newcommand\figurename{Figure}
+%DIF -------
+  \newcommand\figurename{Fig} %DIF > 
+%DIF -------
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+
+\usepackage[numbers,square,comma]{natbib}
+\bibliographystyle{plos2025}
+\usepackage{bookmark}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Periodicity in Steller's eider (Polysticta stelleri) population size and density on the Arctic Coastal Plain, Alaska, revealed using generalized additive models},
+  pdfauthor={Erik E. Osnas},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFaddtex}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdeltex}[1]{{\protect\color{red}\sout{#1}}} %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+\providecommand{\DIFmodbegin}{} %DIF PREAMBLE
+\providecommand{\DIFmodend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF HYPERREF PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}} %DIF PREAMBLE
+\providecommand{\DIFscaledelfig}{0.5}
+%DIF HIGHLIGHTGRAPHICS PREAMBLE %DIF PREAMBLE
+\RequirePackage{settobox} %DIF PREAMBLE
+\RequirePackage{letltxmacro} %DIF PREAMBLE
+\newsavebox{\DIFdelgraphicsbox} %DIF PREAMBLE
+\newlength{\DIFdelgraphicswidth} %DIF PREAMBLE
+\newlength{\DIFdelgraphicsheight} %DIF PREAMBLE
+% store original definition of \includegraphics %DIF PREAMBLE
+\LetLtxMacro{\DIFOincludegraphics}{\includegraphics} %DIF PREAMBLE
+\providecommand{\DIFaddincludegraphics}[2][]{{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}} %DIF PREAMBLE
+\providecommand{\DIFdelincludegraphics}[2][]{% %DIF PREAMBLE
+\sbox{\DIFdelgraphicsbox}{\DIFOincludegraphics[#1]{#2}}% %DIF PREAMBLE
+\settoboxwidth{\DIFdelgraphicswidth}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\settoboxtotalheight{\DIFdelgraphicsheight}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\scalebox{\DIFscaledelfig}{% %DIF PREAMBLE
+\parbox[b]{\DIFdelgraphicswidth}{\usebox{\DIFdelgraphicsbox}\\[-\baselineskip] \rule{\DIFdelgraphicswidth}{0em}}\llap{\resizebox{\DIFdelgraphicswidth}{\DIFdelgraphicsheight}{% %DIF PREAMBLE
+\setlength{\unitlength}{\DIFdelgraphicswidth}% %DIF PREAMBLE
+\begin{picture}(1,1)% %DIF PREAMBLE
+\thicklines\linethickness{2pt} %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\framebox(1,1){}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\line( 1,1){1}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,1){\line(1,-1){1}}}% %DIF PREAMBLE
+\end{picture}% %DIF PREAMBLE
+}\hspace*{3pt}}} %DIF PREAMBLE
+} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbegin}{\DIFaddbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddend}{\DIFaddend} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbegin}{\DIFdelbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelend}{\DIFdelend} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbegin}{\DIFOaddbegin \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbegin}{\DIFOdelbegin \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbeginFL}{\DIFaddbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddendFL}{\DIFaddendFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbeginFL}{\DIFdelbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelendFL}{\DIFdelendFL} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbeginFL}{\DIFOaddbeginFL \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbeginFL}{\DIFOdelbeginFL \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+%DIF AMSMATHULEM PREAMBLE %DIF PREAMBLE
+\makeatletter %DIF PREAMBLE
+\let\sout@orig\sout %DIF PREAMBLE
+\renewcommand{\sout}[1]{\ifmmode\text{\sout@orig{\ensuremath{#1}}}\else\sout@orig{#1}\fi} %DIF PREAMBLE
+\makeatother %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+
+\begin{document}
+\vspace*{0.2in}
+
+% Title must be 250 characters or less.
+\begin{flushleft}
+{\Large
+\textbf\newline{Periodicity in Steller's eider (\emph{Polysticta
+stelleri}) population size and density on the Arctic Coastal Plain,
+Alaska, revealed using generalized additive
+models} % Please use "sentence case" for title and headings (capitalize only the first word in a title (or heading), the first word in a subtitle (or subheading), and any proper nouns).
+}
+\newline
+\\
+% Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
+Erik E. Osnas\textsuperscript{1*}
+\\
+\bigskip
+\DIFdelbegin \textbf{\DIFdel{1}} %DIFAUXCMD
+\DIFdelend \DIFaddbegin \DIFadd{\textsuperscript{1} }\DIFaddend Division of Migratory Bird Management, \DIFdelbegin \DIFdel{US }\DIFdelend \DIFaddbegin \DIFadd{United States }\DIFaddend Fish and Wildlife Service, Anchorage, \DIFdelbegin \DIFdel{AK, USA, 
+}\DIFdelend \DIFaddbegin \DIFadd{Alaska, United States of America 
+}\DIFaddend \bigskip
+
+* \DIFaddbegin \DIFadd{Corresponding author }\newline
+\DIFadd{E-mail: }\DIFaddend erik\_osnas@fws.gov \DIFaddbegin \DIFadd{(EO)
+}\DIFaddend 
+
+\end{flushleft}
+
+\section*{Abstract}
+Annual population and spatial density estimates are needed for the
+threatened Alaska-breeding population of Steller's eiders
+(\emph{Polysticta stelleri}) to assess recovery status and guide
+recovery actions but these quantities are poorly estimated in this rare
+species using traditional methods. Therefore, population size and
+spatial variation in density were estimated across the Arctic Coastal
+Plain (ACP) and Utqiagvik Triangle (Triangle) survey areas using
+spatio-temporal generalized additive models and compared to traditional
+design-based estimates. Compared to design-based estimates, model-based
+estimates were more precise and less variable between years. Moreover,
+data sets can be combined to produce common estimates, detection
+probability can be incorporated to estimate population size, and spatial
+density maps can be produced from model-based estimates. Across both
+data sets and when combined, Steller's eider populations fluctuated with
+an approximate 6.53-year period (95\% CI: \DIFdelbegin \DIFdel{5.49, 7.72}\DIFdelend \DIFaddbegin \DIFadd{5.46, 7.93}\DIFaddend ) with populations
+cycling from modelled posterior lows of 25 to 500 individuals and highs
+from 230 to \DIFdelbegin \DIFdel{\textgreater2000 }\DIFdelend \DIFaddbegin \DIFadd{\textgreater 2000 }\DIFaddend individuals across the ACP. Over the long
+term, the posterior 25-year geometric mean growth rate was -0.02 (\DIFaddbegin \DIFadd{95\% }\DIFaddend CI:
+-0.07, 0.02), and shorter term growth rates were less well-estimated and
+fluctuated between positive and near zero. Density maps showed a high
+concentration in the northern part of the Triangle area and lower
+densities southward and across the ACP. Models fit to just the Triangle
+area indicated that eider density has been shifting northward though
+time, but this pattern was not supported in the sparse ACP data set, nor
+was it well-estimated when the ACP and Triangle data sets were combined.
+Given the strong cycle in this population, estimates of population size
+at similar cycle phases should be used for trend estimates.
+
+\linenumbers
+
+\section{Introduction}\label{introduction}
+
+The Pacific population of Steller's eider (\emph{Polysticta stelleri})
+is a seaduck that nests in northeastern Russia and Alaska, with the
+Alaska breeding population currently listed as Threatened under the
+Endangered Species Act. As such, frequent status assessments are needed
+to determine correct listing status and to guide recovery actions.
+Unfortunately, the rarity and low density of this eider in Alaska make
+inferences of population size, trend, and distribution especially
+difficult. Moreover, observations of Steller's eider on surveys are
+extremely variable among years, with some years having no observed
+eiders \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{obritschkewitsch2008steller} }\hskip0pt%DIFAUXCMD
+\mbox{%DIFAUXCMD
+\citep{wilson2025population}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{obritschkewitsch2008steller, wilson2025population}}\hskip0pt%DIFAUXCMD
+}\DIFaddend .
+It has been hypothesized that these eiders forgo breeding in some years
+when \DIFdelbegin \DIFdel{when }\DIFdelend brown lemming (\emph{Lemmus trimucronatus}) abundance and
+their avian predators are low \citep{quakenbush2004breeding}. Such
+cycles or intermittent breeding would further complicate methods to
+estimate long term trends or model population viability
+\citep{dunham2017evaluating}. The effort described here is an attempt to
+make the most of the available data using modern model-based methods to
+distinguish sampling variation from the underlying signal of population
+differences between years and locations.
+
+The approach here is inspired by \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{miller2013} }\hskip0pt%DIFAUXCMD
+and
+}\DIFdelend \DIFaddbegin \DIFadd{Miller et al \mbox{%DIFAUXCMD
+\citep{miller2013} }\hskip0pt%DIFAUXCMD
+and
+Amundson et al. }\DIFaddend \citep{amundson2019}, where generalized additive models
+\DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{hastie1986generalized} }\hskip0pt%DIFAUXCMD
+\mbox{%DIFAUXCMD
+\citep{wood2017} }\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{hastie1986generalized, wood2017} }\hskip0pt%DIFAUXCMD
+}\DIFaddend are used to estimate
+temporal and spatial variation in eider density. This approach to
+estimating population trend also borrows from the work of
+\DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{sauer2002hierarchical}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{rosenberg2019decline}}\hskip0pt%DIFAUXCMD
+, and
+\mbox{%DIFAUXCMD
+\citep{smith2021north} }\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{sauer2002hierarchical, rosenberg2019decline, smith2021north} }\hskip0pt%DIFAUXCMD
+}\DIFaddend among others, although the focus here is only one species. In general, the advantage of model-based estimates are that they help to separate noise (i.e., sampling variation) from the true underlying signal (i.e., temporal or spatial patterns in density \DIFdelbegin \DIFdel{,
+\mbox{%DIFAUXCMD
+\citep{BDA3}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{hooten2015guide}}\hskip0pt%DIFAUXCMD
+, }\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{BDA3, hooten2015guide}}\hskip0pt%DIFAUXCMD
+, }\DIFaddend many others) and is closely related to the concept of shrinkage of random effects
+\DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{efron1977stein}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{BDA3}}\hskip0pt%DIFAUXCMD
+, }\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{efron1977stein, BDA3}}\hskip0pt%DIFAUXCMD
+, }\DIFaddend where information is shared across
+samples in time, space, or other groups. This contrasts with pure
+design-based estimates, which make minimal assumptions, but suffer from
+high variability in this rare species. Specifically, sampling variation
+alone might lead to observations of zero eiders even when eiders did
+exist in the survey area. While correcting for the detection process is
+possible for design-based estimates, in the case of zero observations,
+no correction can be made, and these years will tend to under represent
+the true animal density. Sampling variation also inflates the
+year-to-year variance in estimates and will tend to make population
+trend estimates less precise and potentially more extreme, especially
+when multiple species are compared or statistical significance tests are
+used to detect trends \citep{sauer2002hierarchical}. In contrast,
+model-based estimates require the specification of a probability model
+for observations and help distinguish sampling from non-sampling
+variation. In the spatial and temporal context, where correlation is
+generally high and positive between nearby measurements, models that
+exploit this feature are especially helpful, and nearly all modern
+methods to detect trends in time and space use such models (see
+citations above, and \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{kery2015applied}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{kery2020applied}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{kery2015applied, kery2020applied}}\hskip0pt%DIFAUXCMD
+}\DIFaddend ).
+
+Below, I apply spatio-temporal models to provide the best available
+estimates of Steller's eider density and annual population size on the
+Arctic Coastal Plain (hereafter, ACP) and a smaller but highly sampled
+triangle-shaped area (Triangle survey) near Utqiagvik, Alaska. I first
+describe the data (\S Survey areas and data source). I then describe the
+calculations of design-based estimates (\S Design-based estimates). This
+is the first report of design-based estimates for the Triangle data that
+include an estimate of uncertainty. These provide a reference point
+against model-based estimates. I then describe the data formatting and a
+variety of spatio-temporal generalized additive models fit to the data
+(\S Model-based estimates). Posterior simulations from the fitted model
+estimates are then used to calculate total population size and trend
+(\S Prediction and posterior simulation). I also describe the detection
+estimate used during posterior simulations (\S Incorporating detection).
+Finally (\S Wavelet analysis), I conduct a wavelet analysis of the
+posterior mean population size across years to estimate and
+statistically test for a periodic cycle in the eider population. This is
+of practical significance because it has been hypothesized that nesting
+effort of Steller's eiders is highest when brown lemming populations are
+at or near peak of their boom-bust cycles, and if there is a strong
+cycle, estimates of trend will depend on the relative endpoints used in
+building the estimate. Thus, if the population is cyclic, consistent
+relative positions in the cycle should be used for trend estimates.
+Throughout the results I provide some interpretation and provide
+comparisons to past work (\S Results and Interpretation). I then provide
+some recommendations for model-based estimation of population size and
+trends, compare these methods to related efforts, and discuss the
+importance of the population cycles and detection estimates for species
+status assessment under the US Endangered Species Act (\S Discussion,
+\S Conclusion).
+
+\section{Methods}\label{methods}
+
+\subsection{Survey areas and data
+source}\label{survey-areas-and-data-source}
+
+Data used in this report came from the ACP Survey conducted by the
+United States Fish and Wildlife Service, Division of Migratory Bird
+Management, Alaska Region, and a survey conducted by ABR, Inc.-
+Environmental Research and Services (ABR) near Utqiagvik, Alaska, under
+contract by the United States Fish and Wildlife Service, Ecological
+Services Field Office, Fairbanks, Alaska, (hereafter, the Triangle
+survey, Fig~\ref{fig-area}). The ACP survey has been described in
+\citep{amundson2019} and \citep{wilson2025population}. Unlike in
+\citep{amundson2019}, here only data from the actual ACP survey (2007 to
+2019 and 2022 to 2024) are used. \DIFaddbegin \DIFadd{Amundson et al. }\DIFaddend \citep{amundson2019} also included data from a different survey (before 2007) with different seasonal timing that causes a difference in observed response (a major subject of the effort in \citep{amundson2019}). Data collected before 2007 have also not undergone the same level of quality control, which was a major effort for this analysis. The ACP data from 2007 to 2024 used in this report, a description of quality control processes, and a description of data manipulations are available at \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{osnas-github}
+}\hskip0pt%DIFAUXCMD
+\mbox{%DIFAUXCMD
+\citep{osnasACP} }\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{osnas-github, osnasACP} }\hskip0pt%DIFAUXCMD
+}\DIFaddend (see \nameref{s1-acpdata}).
+
+The Triangle survey is described in reports from ABR
+\DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{obritschkewitsch2008steller} }\hskip0pt%DIFAUXCMD
+\mbox{%DIFAUXCMD
+\citep{triangleABR}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{obritschkewitsch2008steller, triangleABR}}\hskip0pt%DIFAUXCMD
+}\DIFaddend . Data for the
+Triangle survey were obtained from ABR and are available at
+\nameref{s2-tridata}. A lengthy quality control process was applied to
+make data available for use in this report (documented in the file
+\texttt{wrangle\_ABR.R}, available at \nameref{s3-code}).
+
+Important differences between the surveys include the much higher
+sampling coverage of the Triangle survey (25-50\%) compared to the ACP
+survey (approximately 1 - 8\%), the much larger area of the ACP survey,
+and the sampling effort is stratified in the ACP survey
+(Fig~\ref{fig-area}). Hen eiders, birds occurring off of defined
+transects, and behavior (flying/not flying) are also recorded on the
+Triangle survey, but these are not generally recorded during the ACP
+survey. In addition, the ACP survey records all waterbird species, but
+the Triangle survey records a smaller subset (king {[}\emph{Somateria
+spectabilis}{]} and spectacled {[}\emph{Somateria fischeri}{]} eiders in
+addition to Steller's, other species in some years). Otherwise, the two
+surveys follow standard aerial waterfowl survey protocols
+\citep{cws1987}. No flocked Steller's eiders were observed on either
+survey, and females outside of male-female pairs and all off-transect
+observations were dropped from the Triangle data for all analyses. There
+was one case of an \DIFdelbegin \DIFdel{`}\DIFdelend \DIFaddbegin \DIFadd{"}\DIFaddend open 1\DIFdelbegin \DIFdel{' }\DIFdelend \DIFaddbegin \DIFadd{" }\DIFaddend Steller's eider in the ACP data set (a
+general category for a group of unknown sex or pair status that is not
+appropriate for an observation of a single), and it was assumed to be a
+single male.
+
+\begin{figure}
+
+\caption{\label{fig-area}\DIFdelbeginFL \DIFdelFL{Arctic Coastal Plain (ACP) and Triangle survey
+areas. East-West transect lines are shown in black for one year on the
+ACP. Strata with different sampling intensity for the ACP are shown in
+thicker black lines and different fill colors. The Triangle area is
+shown as a stratum, but it is completely contained within the ACP
+stratum `High'. Transects in the Triangle area are very close (800m in
+most years) so would appear as a solid color at this scale. On the
+Arctic Coastal Plain survey transects are rotated north-south over a
+four year period to increase spatial coverage (not shown).}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Arctic Coastal Plain (ACP) and Triangle survey areas.}} \newline{East-west transect lines are shown in black for one year on the ACP. Strata with different transect sampling intensities for the ACP are shown by different fill colors. The Triangle area is shown as a stratum, but it is completely contained within the ACP High stratum. Transects for the Triangle survey are very close (800m in most years) so would appear as a solid color at this scale. On the Arctic Coastal Plain survey, transects are rotated north-south over a four year period to increase spatial coverage (not shown). All map data are products of the U.S. Government and are in the Public Domain.}\DIFaddendFL }
+
+\end{figure}%
+
+All general data manipulation and analysis was done with program R
+\citep{r-base} in RStudio \citep{RStudio2024} with the tidyverse
+packages \citep{tidyverse}. This manuscript was produced using Quarto
+(https://quarto.org/) and the PLOS One journal template found at
+https://github.com/quarto-journals/plos in an effort to maximize
+reproducibility. Code for this analysis, results, and production of this
+manuscript is maintained at https://github.com/USFWS/STEI-estimates.
+
+\subsection{Design-based estimates}\label{design-based-estimates}
+
+I calculated a design-based estimate using formula R3 of Fewster et
+al. \citep{fewster2009} \DIFdelbegin \DIFdel{, }\DIFdelend (also see \citep{buckland2001}, p.~79)
+\DIFdelbegin \DIFdel{,
+}\DIFdelend modified for strip transects. A ratio estimator, which is more common
+for strip-transect surveys \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{cochran1977} }\hskip0pt%DIFAUXCMD
+\mbox{%DIFAUXCMD
+\citep{williams2002}
+}\hskip0pt%DIFAUXCMD
+\mbox{%DIFAUXCMD
+\citep{thompson2012}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{cochran1977, williams2002, thompson2012}}\hskip0pt%DIFAUXCMD
+}\DIFaddend , was investigated but found to be poor \DIFdelbegin \DIFdel{due to the
+distribution of observations and the triangle shape of the survey area,
+where most observations }\DIFdelend \DIFaddbegin \DIFadd{(very high variance) because most observations of Steller's eiders }\DIFaddend are on short transects in the \DIFdelbegin \DIFdel{north }\DIFdelend \DIFaddbegin \DIFadd{northern end of the triangular-shaped area }\DIFaddend and longer transects in the south rarely have observed \DIFdelbegin \DIFdel{animals. This nullifies any
+advantage of a ratio estimator , which can produce a better estimate when the transect length and number of encounters are positively related
+\mbox{%DIFAUXCMD
+\citep{cochran1977}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{thompson2012}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{eiders. The ratio estimator can provide lower variance estimates when there is a positive correlation between the two variables (here, animal count and transect length or area) \mbox{%DIFAUXCMD
+\citep{cochran1977, thompson2012}}\hskip0pt%DIFAUXCMD
+. In this survey area, however, there is a negative correlation between count and transect length (or area). This makes the ratio estimator worse than a simple plot-based estimator or the R3 estimator of Fewster \mbox{%DIFAUXCMD
+\citep{fewster2009}}\hskip0pt%DIFAUXCMD
+}\DIFaddend . The point estimate was calculated as
+
+\begin{equation}\phantomsection\label{eq-1}{\hat N = A \frac{\Sigma_i n_i}{\Sigma_i a_i}}\end{equation}
+and the variance of \(\hat N\) was calculated as
+\DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelend \begin{equation}\phantomsection\label{eq-2}{var(\hat N) = \left( \frac{A}{a} \right)^2 \frac{a}{k-1} \sum_i a_i\left( \frac{n_i}{a_i} - \frac{n}{a} \right)^2}\end{equation}
+where \(A\) is the total area of the study area, \(a_i\) is the area of
+strip transect \(i\), \(n_i\) is the number of encountered single males
+or pairs on strip transect \(i\), and \(n\) is the total encounters on
+the \(k\) surveyed strips, and \(a\) is the total area of the \(k\)
+surveyed strips. It is arguable if a finite population correction,
+\((1 - a/A)\), is appropriate, so I left it out as it is not used by
+Fewster et al. \citep{fewster2009} or Buckland et al.
+\citep{buckland2001} because observations on transects are not
+repeatable due to movement of birds and the detection process. Fewster
+et al. \citep{fewster2009} showed that \DIFdelbegin \DIFdel{the above }\DIFdelend \DIFaddbegin \DIFadd{Eq (2) }\DIFaddend can overestimate the
+variance of systematic surveys when there is a strong gradient in
+density, as there is in this area. In \DIFdelbegin \DIFdel{any case, }\DIFdelend \DIFaddbegin \DIFadd{this specific case, however, }\DIFaddend the estimator above is much better than a standard ratio estimator\DIFdelbegin \DIFdel{in this specific case}\DIFdelend .
+
+\subsection{Model-based estimates}\label{model-based-estimates}
+
+I used generalized additive models (GAMs, \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{hastie1986generalized}}\hskip0pt%DIFAUXCMD
+,
+\mbox{%DIFAUXCMD
+\citep{wood2017}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{pedersen2019hierarchical}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{hastie1986generalized, wood2017, pedersen2019hierarchical}}\hskip0pt%DIFAUXCMD
+}\DIFaddend ) to estimate eider density as a function of location and time. A GAM can be thought of as a generalized linear mixed model that fits smooth functions (splines) of covariates to predict the response, in addition to standard linear mixed model terms if specified. The optimal degree of smoothing is determined during model fitting through a model selection-like process. The smoothed temporal or spatial effect, thus, can account for autocorrelation in these domains \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{wood2017}}\hskip0pt%DIFAUXCMD
+,
+\mbox{%DIFAUXCMD
+\citep{pedersen2019hierarchical}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{hefley2017basis}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{wood2017, pedersen2019hierarchical, hefley2017basis}}\hskip0pt%DIFAUXCMD
+}\DIFaddend . GAMs are
+widely used in animal density surface modeling (e.g., \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{miller2013}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{amundson2019}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{hollmen2023climate}}\hskip0pt%DIFAUXCMD
+,
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{miller2013, amundson2019, hollmen2023climate} }\hskip0pt%DIFAUXCMD
+}\DIFaddend and many others).
+
+To set up the data for model fitting, I divided sampled transects into 1
+(Triangle survey) or 6 (ACP survey) km segments and assigned
+observations of eiders (including observation of zero eiders) to segment
+centroids. Segments on the boundary of the study area were often smaller
+due to boundary issues. I then assumed a half-strip width of 200 m and
+calculated an area for each segment. Total number of eider observations
+(pairs and males) were summed for each segment and the coordinates (in \DIFdelbegin \DIFdel{isomorphic UTMs}\DIFdelend \DIFaddbegin \DIFadd{Alaska Albers Equal Area projection, EPSG:3338}\DIFaddend ) of the centroid were used for spatial location. Year was used as the covariate for temporal effects. The same procedure was used for both the entire ACP and for the Triangle survey, but for the ACP-only model (see below) the segment size for model fitting was 6 km. This was done for computational reasons (time) related to fitting many different models and to be consistent with \citep{amundson2019}. When Triangle and ACP data were combined into one model, a common 1 km segment size was used. All spatial data manipulation was done using the R package \texttt{sf} \citep{sf}.
+
+I fit a variety of models to explore spatial and temporal effects. The
+linear predictor for each model was:
+
+\[M0: Count \sim s(X, Y)\] \[M1: Count \sim s(X, Y) + s(Year)\]
+\[M2: Count \sim s(X, Y) + s(Year) + ti(X, Y, Year)\]
+\[M3: Count \sim s(X, Y) + s(Year) + s_{re}(fYear)\]
+\[M4: Count \sim s(X, Y) + s_{re}(fYear)\] In the above, \(Count\) is
+the total number of pairs or males observed in a transect segment,
+\(s()\) indicates a smooth function, \(ti()\) indicates a ``tensor
+product smooth'' (a multidimensional smooth that allows the units \DIFdelbegin \DIFdel{for
+}\DIFdelend \DIFaddbegin \DIFadd{of the }\DIFaddend dimensions to differ), and \(s_{re}()\) is a random effect in the usual
+mixed model sense (in
+\texttt{mgcv:\ s(...,\ bs\ =\ \textquotesingle{}re\textquotesingle{})}).
+\(Year\) is calendar year as a continuous numeric variable, and
+\(fYear\) is calendar year as a factor variable. Model \(M0\) is just a
+smooth of location that does not change through time. Model \(M1\) is a
+smooth of location and a separate smooth of year. This model means that
+on the log scale the spatial smooth does not change its relative shape
+through time but the overall height changes as a smooth function of
+year. Model \(M2\) is a smooth of location, year, and a spatio-temporal
+interaction between location and year. Model \(M2\) allows the shape of
+the spatial pattern to change through time and allows the time trend to
+depend on location. Model \(M3\) estimates a smooth of location, a
+smooth of year, and a separate random effect of year, which allows
+abrupt non-smooth deviations from an underlying smooth trend
+\citep{smith2021north}. Model \(M4\) estimates a smooth of location and
+treats year as a simple random effect. The model with year as a random
+effect still imposes smoothing on the year effect, just as in the usual
+mixed model, where year effects are pulled or ``shrunk'' toward an
+overall grand mean. In the models above, each effect is written as an
+``average'' or ``partial'' effect relative to the others and all contain
+an intercept (not shown). Thus, \(s(X,Y) + s(Year)\) is an average
+effect of location and an average effect of Year as a deviation from an
+overall intercept. All models used a negative binomial response, a log
+link function, and the log segment area as an offset, which controlled
+for varying areas of segments near study area boundaries. Thus, the
+model is estimating the expected response in 1 \(km^2\) of area. The
+scale parameter of the negative binomial was estimated during model
+fitting. Other response models were fit (Poisson, Tweedie) and all were
+found to be substantially worse fitting than the negative binomial. I
+used a \DIFdelbegin \DIFdel{a }\DIFdelend `thin plate regression spline' (\texttt{s(...,\ bs\ =\ "tp")}
+in \texttt{mgcv}, \citep{r-mgcv}) as the spline basis function for all
+smooth effects in all models. All model fitting and prediction was done
+using the R package \texttt{mgcv} \citep{r-mgcv}. Model diagnostics were
+inspected using the residual simulation methods in R package
+\texttt{DHARMa} \citep{DHARMa} and visualizations using the R package
+\texttt{gratia} \citep{r-gratia}. Special attention was given to
+quantile-quantile plots and over-dispersion and zero-inflation metrics.
+Residual simulations suggested that the negative binomial distribution
+appropriately model\DIFaddbegin \DIFadd{l}\DIFaddend ed the large number of response zeros in these data.
+To select the best model, the \texttt{\DIFdelbegin \DIFdel{mgcv::}\DIFdelend AIC} function was used \DIFaddbegin \DIFadd{with the correct degrees of freedom for a GAM (see }\texttt{\DIFadd{?mgcv::AIC.gam}} \DIFadd{in \mbox{%DIFAUXCMD
+\citep{r-mgcv}}\hskip0pt%DIFAUXCMD
+)}\DIFaddend .
+
+For modelling the ACP data alone, additional models were fit that
+contained a random effect for observer. The response for these models
+was observer-specific; therefore, each segment was only 200 m wide
+(i.e., each side of the plane was a separate observation 200 m wide). An
+additional five models were fit where each model above also contained an
+observer effect, \(s_{re}(Observer)\). Observer effects were not
+estimated for the Triangle data because they were not recorded in most
+years. When I combined the Triangle data with the ACP data, I used a
+fixed factor effect for survey (Triangle or ACP) to model any average
+difference between surveys and used a model with spatial and temporal
+smooths as in \(M1\). A model with a spatio-temporal interaction
+(\(M2\)) was also explored for the combined Triangle and ACP data, but
+rejected. The two data series do not overlap during the period of
+1999-2006, so the interaction term was not well estimated and produced
+widely variable population estimates during posterior simulations for
+the years 1999 to 2006. During posterior simulation (see below), the
+survey covariate was set to predict the Triangle survey because this is
+the area where detection was estimated. R code giving the details of
+model fitting can be found in the supplemental information
+(\nameref{s3-code}).
+
+\subsection{Prediction and posterior
+simulation}\label{prediction-and-posterior-simulation}
+
+I used the \texttt{predict.gam} function from \texttt{mgcv} package
+\DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{r-mgcv}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{wood2017} }\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{r-mgcv, wood2017} }\hskip0pt%DIFAUXCMD
+}\DIFaddend to predict the expected density of
+eiders across the study area (Triangle or ACP) in each year, from 1999
+to 2023 for the Triangle and from 2007 to 2024 for the ACP. Note that
+years with no data collection are included in these predictions. To do
+this, the study area was gridded into 1 \(km^2\) or smaller
+cells--smaller when the cells intersect the boundary of the study
+area--and centroids and areas of each cell were calculated. A data set
+was then created by replicating these point locations and areas for each
+year. This large data set was then used in the \texttt{predict} function
+along with the model object from the best fitting GAM model. For spatial
+maps to represent relative differences in eider density, predictions
+were made on the response scale (\texttt{predict} option
+\texttt{type\ =\ "response"}) and the year effect was excluded
+(\texttt{exclude\ =\ "s(Year)"} or
+\texttt{exclude\ =\ c("s(Year)",\ "ti(X,Y,Year)")}). Predictions at cell
+centroids were used for the entire cell, that is, the continuous smooth
+density surface was rasterized into 1 \(km^2\) or smaller cells for
+display in maps.
+
+Results of fitting a GAM in \texttt{mgcv} provide a posterior
+distribution of model parameters \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{wood2017}
+}\hskip0pt%DIFAUXCMD
+\mbox{%DIFAUXCMD
+\citep{miller2025bayesian}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{wood2017, miller2025bayesian}}\hskip0pt%DIFAUXCMD
+}\DIFaddend . Therefore, posterior simulation was used to calculate population totals over the study area for each year (see examples in help files for \texttt{mgcv::predict} in \citep{r-mgcv} or \citep{wood2017}, p.~342-343). Predictions were made once on the same grid and years as described above but \texttt{type\ =\ lpmatrix} was specified so that a design matrix, \(\textbf X\), was returned with one row for each prediction location-year and one column for each term in the model. Multivariate normal samples of the model parameters, \(\textbf b_i\) were then simulated using the fitted model parameter vector and variance-covariance matrix. For the Triangle study area, direct simulation from a multivariate normal distribution was used. For all simulations on the ACP study area, a Metropolis-Hastings algorithm was used to obtain samples because large areas of zero observations caused poor performance based on direct multivariate normal simulation using the parameter estimates and covariance matrix (see
+\texttt{?mgcv::gam.mh} in \citep{r-mgcv} or \citep{gratiaPost}). A
+posterior sample on the response scale was then calculated as
+\begin{equation}\phantomsection\label{eq-3}{\textbf y_i = \textbf a exp(\textbf X \textbf b_i )}\end{equation}
+where \(\textbf a\) is a vector of the area of each grid cell and
+\(\textbf y_i\) is a vector of the expected responses. Note that
+\(\textbf y_i\) is the expectation of the negative binomial distribution
+and not an actual realization; thus, it is \(>0\) for all predictions.
+The above simulation was repeated a large number of times (500) and
+results were stored.
+
+Various derived quantities of the posterior samples can also be
+calculated. To find the expected population total in a given year, the
+sampled vector can be summed over all cells for a given year. Let \(i\)
+index the posterior sample, \(j\) index year, and \(k\) index the cell,
+then a posterior sample for the expected population total in year \(j\)
+is
+\begin{equation}\phantomsection\label{eq-4}{\hat Y_{ij} = \sum_k y_{ijk}.}\end{equation}
+Because the model was fit to pairs and single males, the above gives the
+total ``indicated pairs''. To transform this to birds and ``indicated
+birds'', the above posterior sample would be multiplied by 2. A
+detection corrected population total for ``indicated birds'' can be
+found as
+\begin{equation}\phantomsection\label{eq-5}{\hat N_{ij} = 2 \hat Y _{ij}/d_{ij}}\end{equation}
+if detection varies only by year, where \(d_{ij}\) is a posterior sample
+of detection in year \(j\). If detection varies with location or other
+covariates, then the adjustment needs to take place at a lower level of
+\(y_{ijk}\).
+
+The posterior trend on the log scale from year \(j\) to \(j+t\) can be
+found as
+\begin{equation}\phantomsection\label{eq-6}{T_{it} = log \left[ (\hat N_{ij+t}/\hat N_{ij})^{1/t} \right] = \frac{log(\hat N_{ij+t}) - log(\hat N_{ij})}{t}.}\end{equation}
+Note that this measure of trend is identical to the slope parameter in a
+``log-linear'' regression when the smooth of year in the GAM model,
+\(s(Year)\), gives a straight line. The advantage of the GAM is that the
+notion of trend can be generalized to non-linear cases where the trend
+may be increasing, decreasing, or changing cyclically through time. The
+posterior distribution for any quantity can then be displayed using a
+histogram or summarized with various metrics. I summarized the posterior
+with the mean and the 0.025, 0.5 (median), and 0.975 quantiles. For
+trend, I only used detection corrected posterior estimates (see below).
+Full detail of the posterior simulations can be found in the
+supplemental information (\nameref{s3-code}).
+
+\subsection{Incorporating detection}\label{incorporating-detection}
+
+I used a preliminary detection rate estimated from the second year
+(2018) of an on-going field study using artificial decoys to estimate
+detection. The detection analysis was completed by Catherine Bradley
+(USFWS, retired) and showed that detection rate in 2018 depended only on
+distance from transect (see \nameref{s4-bradley}). Detection was also
+estimated during 2017, the first year of the study, but field protocol
+issues caused problems during this pilot year, and the protocol was
+stabilized in 2018. Because distance was not available for observations
+outside the decoy detection study area (a sub-set of the Triangle area),
+I calculated the average `unconditional' detection rate over the
+transect half-strip width (\DIFdelbegin \DIFdel{Table 3 from }\DIFdelend \nameref{s4-bradley}). In this
+context, `unconditional' is the detection rate estimated from
+double-observer sightability trials that include decoys not observed by
+either observer (a `00' capture history). I also used this same
+detection rate for the ACP because no better estimate for Steller's
+eider is available. The detection rate used here should be viewed as
+provisional until a more complete analysis can be conducted
+incorporating data from across multiple years and crews. In any case, it
+is meant to be the average detection rate over all observations,
+including the covariates of distance, year, observer, sun angle, etc.,
+and was in fact used for the Steller's eider Species Status Assessment
+of 2025 \citep{steiSSA2025}.
+
+To calculate an average detection rate, I assumed that eiders (detected
+and undetected) were expected to be uniformly distributed with distance
+from the transect, which is true given the design of the Triangle and
+ACP surveys. I then averaged detection and the variance of the detection
+estimate over each of the four distance bins in \DIFdelbegin \DIFdel{Table 3 of
+}\DIFdelend \nameref{s4-bradley}. Because distance bins were of equal width, detection was estimated as a factor of bin (i.e, a continuous distance function was not estimated), and no other covariates were found important, the mean and variance are a simple equally weighted average over the distance bins. In \DIFdelbegin \DIFdel{Table 3 of }\DIFdelend \nameref{s4-bradley} only the mean and ninety-five percent credible interval was given, so I approximated the standard error of the estimate in each bin by the range divided by 2*1.96, which is the typical number of standard deviations in the range of a symmetric credible interval.
+
+This worked out to a detection rate of 0.307 with a standard deviation
+of 0.092 or a Beta(7.41, 16.72). Note that this detection prior will
+result in a large amount of uncertainty in the estimated number of
+eiders. At detection rates of 0.16 and 0.47 (the fifth and ninety-fifth
+percentile of the distribution, respectively), the eider population
+estimate will be increased about 6- and 2-fold, respectively. Thus,
+increased information on detection would be valuable for improving our
+knowledge of the eider population size. Interestingly, this detection
+rate prior has a very similar mean but is much more variable compared to
+that used in the past based on expert judgment
+\citep{dunham2017evaluating}.
+
+The posterior population estimate for ``indicated breeding birds''
+(single males and pairs), accounting for constant detection, was then
+calculated as
+\begin{equation}\phantomsection\label{eq-7}{\hat N_{ij} = 2\hat Y _{ij}/d_{i}.}\end{equation}
+with \(d_i\) sampled from a Beta distribution with the mean and standard
+deviation above. Thus, detection was assumed constant across years and
+other covariates (e.g., crews, singles, pairs). If detection varies with
+year, location or other covariates, then the adjustment needs to take
+place at a lower level as in (Eq~\ref{eq-5}).
+
+In general, quantities \(\hat Y\) are designated as ``indicated pairs''
+because single males are assumed to ``indicate'' an observed female on
+the nest (the male-female sex ratio is assumed equal). (Technically,
+within the tradition of waterfowl biology, ``indicated pairs'' include
+flocked drakes in groups of less than 5. However, none of these were
+observed in either data set; thus, ``indicated breeding pairs'' and
+``indicated pairs'' are the same.) When ``indicated pairs'' are
+multiplied by 2, \(2\hat Y\), then the quantity becomes ``indicated
+birds'' because each pair is 2 individuals. Hereafter, I use ``indicated
+breeding birds'', and I use the word ``index'' to distinguish quantities
+that are not corrected for detection. Thus, \(2\hat Y\) is the
+``indicated breeding bird index,'' and \(2\hat Y/d\) is simply
+``indicated breeding birds,'' to reflect that it is a population
+estimate, at least conditional on the assumptions inherent with
+``indicated.''
+
+\subsection{Wavelet analysis}\label{wavelet-analysis}
+
+In order to formally estimate the period of a repeating cycle in the
+Steller's eider population, I used wavelet analysis to detect and
+statistically test for the presence of a cycle. Wavelet analysis is
+similar to a Fourier transform of a time series where the time domain is
+expressed in the frequency domain. Unlike a basic Fourier transform,
+however, a wavelet transform localizes the frequency information in time
+so that changes in the frequency of a signal with time can be examined.
+The main product of a wavelet analysis is a ``power spectrum'' (also
+know as a spectrogram) that is a three dimensional surface showing the
+``power'' (z-axis or a measure of the strength of a particular frequency
+or period) in a time series as a function of the wave period (y-axis)
+and time (x-axis). High ``power'' ridges across time correspond to a
+large signal at that frequency (or period) in the time series. If the
+period is changing through time, the position of the ridge will change
+relative to the period axis as time increases. An accessible
+introduction can be found in \citep{cazelles2008wavelet} and in the
+documentation to the R package \texttt{WaveletComp} \citep{r-wavelet}. I
+used the function \texttt{analyze.wavelet} from the \texttt{WaveletComp}
+package \citep{r-wavelet} to calculate the wavelet properties of the
+posterior mean population time series estimate from the model that
+combined both Triangle and ACP data. I used the null hypothesis of white
+noise and 200 bootstrap simulations to test for statistical departure
+form white noise (a flat or uniform frequency spectrum) and to calculate
+a confidence interval for the period. I then used the functions
+\texttt{wt.image} to visualize the power spectrum and \texttt{wt.avg} to
+visualize the average power spectrum across years. To find the full
+posterior of the dominant wave frequency, I calculated the wavelet
+properties of 500 posterior samples of the population time series from
+the best fitting GAM model and saved the wave period at the maximum
+average power across time for each sample. I then used the mean and 95\%
+credible interval to summarize this posterior.
+
+\section{Results and Interpretation}\label{results-and-interpretation}
+
+\subsection{Observations of Steller's
+eider}\label{observations-of-stellers-eider}
+
+Observed locations of Steller's eiders across the study area are shown
+in Fig~\ref{fig-observations}. Most observations are in the northern
+coastal area of the Triangle and Teshekpuk area. No observations of
+Steller's eiders have been made in the two southernmost ACP strata.
+Observations from the Triangle survey abruptly stop at the southern edge
+of the Triangle survey area, suggesting that eiders sometimes exist
+south of that area more often than observations from either survey
+suggest. Fig~\ref{fig-count} shows the count of Steller's eiders by year
+for both the Triangle and ACP surveys.
+
+\begin{figure}
+
+\caption{\label{fig-observations}\DIFdelbeginFL \DIFdelFL{Observed Steller's eider during the
+Arctic Coastal Plain (2007-2024) and Triangle (1999-2023) surveys.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Observed Steller's eider during the Arctic Coastal Plain (2007-2024) and Triangle (1999-2023) surveys.}} \newline{Arctic Coastal Plain (ACP) strata are shown by black lines. Locations of eider observations by survey are given by the purple (ACP) or orange (Triangle) dots. All map data are products of the U.S. Government and are in the Public Domain.}\DIFaddendFL }
+
+\end{figure}%
+
+\begin{figure}
+
+\caption{\label{fig-count}\DIFdelbeginFL \DIFdelFL{Number of Steller's eider observations by year
+for the Arctic Coastal Plain and Triangle surveys.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Number of Steller's eider observations by year for the Arctic Coastal Plain and Triangle surveys.}}\DIFaddendFL }
+
+\end{figure}%
+
+\subsection{Design-based estimates}\label{design-based-estimates-1}
+
+Design-based estimates for the both survey areas are shown in
+Fig~\ref{fig-design}. No survey was conducted in 2020 for the Triangle
+survey or in 2020 and 2021 for the ACP. Note the higher mean and
+variance of estimates for the ACP compared to the Triangle survey and
+that estimates for the ACP often overlap zero. This is due to the larger
+area and smaller sampling fraction of the ACP design. Design-based
+estimates make minimal assumptions and provide an important check on
+model-based estimates. Two important assumptions behind design-based
+estimates are that (1) the survey design is unbiased (random or
+systematic selection of sampling units, here transects) and (2) the
+survey was implemented as designed. These assumptions are met in these
+surveys. An additional often unstated assumption is that the response is
+measured without error. In this case, measurement errors include a large
+detection bias and, presumably less often, species mis\DIFdelbegin \DIFdel{s-}\DIFdelend identification .
+Detection bias causes a lower mean response and increased variance in
+response. Finally, design-based estimates are based on estimating a mean
+response across all sampled transects, and then use statistical sampling
+theory to derive estimator variance. This works well for common species
+and large sample size (many transects), but for rare species that might
+not be encountered on any transects during a sample, the estimate and
+its variance are necessarily zero when there are no detection events,
+even when the species might have existed in the survey area. This might
+have been the case in 2009 on the Triangle area (Fig~\ref{fig-design}A) and in 2010 for all strata of the ACP (Fig~\ref{fig-design}B), and
+was the case in 2, 10, 16 and 16 years out of 16 for the High,
+Teshekpuk, \DIFdelbegin \DIFdel{and }\DIFdelend Medium, and Low strata of the ACP, respectively.
+
+\begin{figure}
+
+\caption{\label{fig-design}\DIFdelbeginFL \DIFdelFL{Design-based estimates in the Triangle survey
+area (A) and Arctic Coastal Plain survey area (B). Confidence intervals
+(95\%, orange band) have been truncated at zero. No detection correction
+was applied.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Design-based estimates for each survey.}}\newline{(A) Triangle survey area and (B) Arctic Coastal Plain survey area. Point estimates for each year are given by black dots contected by black lines across years. Confidence intervals (95\%, orange band) have been truncated at zero. No detection correction was applied.}\DIFaddendFL }
+
+\end{figure}%
+
+\subsection{Model-based Estimates:
+Triangle}\label{model-based-estimates-triangle}
+
+Models fit to data from the Triangle showed that the best model contains
+a spatial smooth, a year smooth, and a spatio-temporal smooth (model M2,
+Table~\ref{tbl-modelsTri}). The model with a separate space and time
+smooth (M1) and all other models were worse (\(\Delta AIC >5\)). For all
+results below, I used model M2.
+
+\begin{table}
+
+\caption{\label{tbl-modelsTri}\DIFdelbeginFL \DIFdelFL{AIC table for models fit to Triangle data.
+Model structures are described in the main text.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{AIC table for models fit to Triangle data.}}\DIFaddendFL }
+
+\DIFdelbeginFL %DIFDELCMD < \centering{
+%DIFDELCMD < 
+
+%DIFDELCMD < \fontsize{12.0pt}{14.4pt}\selectfont
+%DIFDELCMD < \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrr}
+%DIFDELCMD < \toprule
+%DIFDELCMD < Model & Linear Predictor & df & AIC & DeltaAIC \\ 
+%DIFDELCMD < \midrule\addlinespace[2.5pt]
+%DIFDELCMD < M2 & s(X,Y) + s(Year) + ti(X,Y,Year) & 35.48 & 2876.13 & 0.00 \\ 
+%DIFDELCMD < M1 & s(X,Y) + s(Year) & 33.63 & 2881.94 & 5.81 \\ 
+%DIFDELCMD < M3 & s(X,Y) + s(Year) + s(fYear) & 39.89 & 2884.29 & 8.15 \\ 
+%DIFDELCMD < M4 & s(X,Y) + s(fYear) & 38.18 & 2888.06 & 11.92 \\ 
+%DIFDELCMD < M0 & s(X,Y) & 19.78 & 2979.11 & 102.98 \\ 
+%DIFDELCMD < \bottomrule
+%DIFDELCMD < \end{tabular*}
+%DIFDELCMD < 
+
+%DIFDELCMD < }
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \centering{
+\fontsize{12.0pt}{14.4pt}\selectfont
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrr}
+\toprule
+Model & Linear Predictor & df & AIC & $\Delta$AIC \\ 
+\midrule\addlinespace[2.5pt]
+M2 & s(X,Y) + s(Year) + ti(X,Y,Year) & 35.48 & 2876.13 & 0.00 \\ 
+M1 & s(X,Y) + s(Year) & 33.63 & 2881.94 & 5.81 \\ 
+M3 & s(X,Y) + s(Year) + s(fYear) & 39.89 & 2884.29 & 8.15 \\ 
+M4 & s(X,Y) + s(fYear) & 38.18 & 2888.06 & 11.92 \\ 
+M0 & s(X,Y) & 19.78 & 2979.11 & 102.98 \\ 
+\bottomrule
+\end{tabular*}
+}
+\begin{flushleft} \DIFaddFL{Model structures are described in the main text.
+}\end{flushleft}
+\DIFaddendFL \end{table}%
+
+The spatial, temporal, and spatio-temporal partial effects of model M2
+are shown in Fig~\ref{fig-model}. The largest approximate p-value for
+the smooth terms was 0.003 for the spatio-temporal smooth. Effective
+degrees of freedom for the spatial \DIFaddbegin \DIFadd{(Fig~\ref{fig-model}A), temporal (Fig~\ref{fig-model}B)}\DIFaddend , \DIFdelbegin \DIFdel{temporal, }\DIFdelend and spatio-temporal \DIFaddbegin \DIFadd{(Fig~\ref{fig-model}C) }\DIFaddend smooth
+were 16.1, 12.1, and 2.1\DIFaddbegin \DIFadd{, }\DIFaddend respectively. Highest densities of Steller's
+eiders were in the northern section of the Triangle and the lowest
+densities were in the southeast, but as shown by the spatio-temporal
+smooth (Fig~\DIFdelbegin \DIFdel{\ref{fig-model-3}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-model}C}\DIFaddend ), density decreased through time in the
+southeast and increased in the northwest of the Triangle. Note that the
+spatio-temporal smooth has essentially been shrunken to a simple 2D
+plane that is changing through time such that eider density is
+increasing in the northwest and decreasing in the southeast. Full
+\texttt{mgcv} model objects and parameter values can be found in the
+supplemental information (\nameref{s5-results}). The temporal pattern
+appears cyclic with a period of 5-7 years and no strong directional
+trend (Fig~\DIFdelbegin \DIFdel{\ref{fig-model-2}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-model}B}\DIFaddend ).
+
+\begin{figure}
+
+\DIFdelbeginFL %DIFDELCMD < \begin{minipage}{0.45\linewidth}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \caption{\label{fig-model}\textbf{\DIFaddFL{Partial effect plots for the best model fit to the Triangle survey data.}}\newline{Plots of spatial (A), temporal (B), and spatio-temporal interaction (C) partial effects from the best fitting model. In (B) the shaded region is 2 standard errors. In (A) and (C) black lines show contour lines of equal partial effect, and color shows increased (red) or decreased (blue) density relative to the intercept. In (C) the interaction is shown by 4 density surfaces at different time points from 1999 to 2023. Each panel is as in (A) but has been simplified to the bounding rectangle of the survey area. Note that as
+time progresses, the upper left of each panel increases in density as
+indicated by the shift from blue to red.}}
+\DIFaddendFL 
+
+\DIFdelbeginFL %DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-model-1}%%%
+\DIFdelFL{Spatial smooth}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIF < 
+%DIFDELCMD < \begin{minipage}{0.10\linewidth}
+%DIFDELCMD < %%%
+\DIFdelFL{~}%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIF < 
+%DIFDELCMD < \begin{minipage}{0.45\linewidth}
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-model-2}%%%
+\DIFdelFL{Temporal smooth}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < \newline
+%DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-model-3}%%%
+\DIFdelFL{Spatio-temporal smooth}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \caption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-model}%%%
+\DIFdelFL{Plots of spatial (A), temporal (B), and
+spatio-temporal interaction (C) partial effects from the best fitting
+model. In (B) the shaded region is 2 standard errors. In (A) and (C)
+black lines show contour lines of equal partial effect, and color shows
+increased (red) or decreased (blue) density relative to the intercept.
+In (C) the interaction is shown by 16 density surfaces at different time
+points from 1999 to 2023. Each panel is as in (A) but has been
+simplified to the bounding rectangle of the survey area. Note that as
+time progresses, the upper left of each panel increases in density as
+indicated by the shift from blue to red.}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelendFL \end{figure}%
+
+Spatial density of Steller's eider across the Triangle after removing
+the effects of year and the space-by-year interaction (i.e., the average
+or partial effect of location) is shown in Fig~\ref{fig-densityABR}.
+Relatively high densities have occurred in the north and moderate
+densities in the east and far southwest. With the spatio-temporal
+effect, however, these areas of higher densities in the south have
+decreased.
+
+\begin{figure}
+
+\caption{\label{fig-densityABR}\DIFdelbeginFL \DIFdelFL{Predicted average density of Steller's
+eider after removing the effect of year and space-by-year intereaction
+in the Triangle survey area.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Predicted average density of Steller's eider in the Triangle survey.}}\newline{Predicted density after the effects of year and space-by-year interaction have been removed.}\DIFaddendFL }
+
+\end{figure}%
+
+Population estimates across the Triangle survey area by year for
+indicated breeding birds without (\DIFaddbegin \DIFadd{Fig~\ref{fig-yearABR}}\DIFaddend A) and with (\DIFaddbegin \DIFadd{Fig~\ref{fig-yearABR}}\DIFaddend B) a detection correction are shown in Fig~\ref{fig-yearABR}. There is a substantial increase in the population estimates, the uncertainty, and in the skew of the posterior toward higher population estimates with the application of the a detection correction (Fig~\DIFdelbegin \DIFdel{\ref{fig-abrB}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-yearABR}B}\DIFaddend ). This is due to the low mean detection rate and high uncertainty in the detection prior. Note that the model predicts the population in 2020 when no survey was conducted. The population appears to cycle on a period of 5-7 years (Fig~\DIFdelbegin \DIFdel{\ref{fig-abrB}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-yearABR}B}\DIFaddend ); thus, causing the posterior n-year trend to fluctuate at the posterior mean (Fig~\ref{fig-trendABR}). Trend estimates are more precise for longer lags, but also fluctuate from positive to negative at the posterior mean (Fig~\ref{fig-trendABR}).
+
+\begin{figure}
+
+\DIFdelbeginFL %DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \caption{\label{fig-yearABR}\textbf{\DIFaddFL{Posterior estimates of Steller's eider in the Triangle survey area, 1999-2023.}}\newline{(A) without accounting for detection and (B) after applying a detection correction. The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95\% credible interval.}}
+\DIFaddendFL 
+
+\DIFdelbeginFL %DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-abrA}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < \newline
+%DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-abrB}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \caption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-yearABR}%%%
+\DIFdelFL{Posterior estimates of Steller's eider in
+the Triangle survey area without accounting for detection (A) and after
+applying a detection correction (B). The black line is the posterior
+mean, the dashed black line is the posterior median, and the orange band
+is the 95\% credible interval.}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelendFL \end{figure}%
+
+\begin{figure}
+
+\caption{\label{fig-trendABR}\DIFdelbeginFL \DIFdelFL{Posterior trend estimates for Steller's
+eider in the Triangle survey area, 1999-2023. The y axis is the log of
+the geometric mean growth rate, and the x axis is the lag-year trend,
+i.e., for lag 10 gives the 10-year trend from 2013 to 2023. The black
+line is the posterior mean, the dashed black line is the posterior
+median, and the orange band is the 95\% credible interval. The
+horizontal thick black line is the y-axis origin.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Posterior trend estimates for Steller's eider in the Triangle survey area, 1999-2023.}} \newline{The y axis is the log of the geometric mean growth rate, and the x axis is the lag-year trend, the lag of 10 gives the 10-year trend from 2013 to 2023. The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95\% credible interval. The
+horizontal thick black line is the y-axis origin.}\DIFaddendFL }
+
+\end{figure}%
+
+\subsection{Model-based Estimates: ACP}\label{model-based-estimates-acp}
+
+Models fit to the ACP data showed that a model with a random effect of
+year, rather than a smooth of year, fit best
+(Table~\ref{tbl-modelsACP}). In addition, models with a random observer
+effect contributed nothing to improvement in AIC
+(Table~\ref{tbl-modelsACP}). Upon examining model summary statistics,
+models with a smooth of year shrunk to a straight line and observer
+effect variance was essentially zero (results can be found in model
+objects of \nameref{s5-results}). These results are likely due to the
+few observations of Steller's eider on the ACP survey and the overall
+sparse nature of the sampling. The year random effect of the best model
+had the largest p-value (0.008) and an effective degrees of freedom of
+7.9, indicating substantial shrinkage toward the mean of the 16 year
+effects. The spatial smooth was substantially simpler (effective degrees
+of freedom = 9.8) than the best model for the Triangle and showed a
+simple decline in eider density as distance from the coast increased
+(Fig~\DIFdelbegin \DIFdel{\ref{fig-modelACP-1}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-modelACP}}\DIFaddend ). Despite the shrinkage of the temporal random
+effects, they still varied greatly \DIFdelbegin \DIFdel{on the log scale
+(Fig~\ref{fig-modelACP-2}}\DIFdelend \DIFaddbegin \DIFadd{(see below}\DIFaddend ).
+
+\begin{table}
+\begin{adjustwidth}{-2.25in}{0in}
+\caption{\label{tbl-modelsACP}\DIFdelbeginFL \DIFdelFL{AIC table for model fit to Arctic Coastal
+Plain data. Model structures are described in the main text. The suffix
+`.obs' indicates a model that contained a random effect of observer.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{AIC table for model fit to Arctic Coastal Plain data.}}\DIFaddendFL }
+\DIFdelbeginFL %DIFDELCMD < 
+
+%DIFDELCMD < \centering{
+%DIFDELCMD < 
+
+%DIFDELCMD < \fontsize{12.0pt}{14.4pt}\selectfont
+%DIFDELCMD < \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrr}
+%DIFDELCMD < \toprule
+%DIFDELCMD < Model & Linear Predictor & df & AIC & DeltaAIC \\ 
+%DIFDELCMD < \midrule\addlinespace[2.5pt]
+%DIFDELCMD < M4 & s(X,Y) + s(fYear) & 23.65 & 531.58 & 0.00 \\ 
+%DIFDELCMD < M4.obs & s(X,Y) + s(fYear) + s(Observer) & 23.65 & 531.58 & 0.00 \\ 
+%DIFDELCMD < M3 & s(X,Y) + s(Year) + s(fYear) & 24.51 & 531.83 & 0.25 \\ 
+%DIFDELCMD < M3.obs & s(X,Y) + s(Year) + s(fYear) + s(Observer) & 24.53 & 531.86 & 0.28 \\ 
+%DIFDELCMD < M0 & s(X,Y) & 14.54 & 537.44 & 5.86 \\ 
+%DIFDELCMD < M0.obs & s(X,Y) + s(Observer) & 14.54 & 537.44 & 5.86 \\ 
+%DIFDELCMD < M1 & s(X,Y) + s(Year) & 15.60 & 539.22 & 7.64 \\ 
+%DIFDELCMD < M1.obs & s(X,Y) + s(Year) + s(Observer) & 15.60 & 539.22 & 7.64 \\ 
+%DIFDELCMD < M2 & s(X,Y) + s(Year) +ti(X,Y,Year) & 14.07 & 540.47 & 8.89 \\ 
+%DIFDELCMD < M2.obs & s(X,Y) + s(Year) + ti(X,Y,Year) + s(Observer) & 14.07 & 540.47 & 8.89 \\ 
+%DIFDELCMD < \bottomrule
+%DIFDELCMD < \end{tabular*}
+%DIFDELCMD < 
+
+%DIFDELCMD < }
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \centering{
+\fontsize{12.0pt}{14.4pt}\selectfont
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrr}
+\toprule
+Model & Linear Predictor & df & AIC & $\Delta$AIC \\ 
+\midrule\addlinespace[2.5pt]
+M4 & s(X,Y) + s(fYear) & 23.65 & 531.58 & 0.00 \\ 
+M4.obs & s(X,Y) + s(fYear) + s(Observer) & 23.65 & 531.58 & 0.00 \\ 
+M3 & s(X,Y) + s(Year) + s(fYear) & 24.51 & 531.83 & 0.25 \\ 
+M3.obs & s(X,Y) + s(Year) + s(fYear) + s(Observer) & 24.53 & 531.86 & 0.28 \\ 
+M0 & s(X,Y) & 14.54 & 537.44 & 5.86 \\ 
+M0.obs & s(X,Y) + s(Observer) & 14.54 & 537.44 & 5.86 \\ 
+M1 & s(X,Y) + s(Year) & 15.60 & 539.22 & 7.64 \\ 
+M1.obs & s(X,Y) + s(Year) + s(Observer) & 15.60 & 539.22 & 7.64 \\ 
+M2 & s(X,Y) + s(Year) +ti(X,Y,Year) & 14.07 & 540.47 & 8.89 \\ 
+M2.obs & s(X,Y) + s(Year) + ti(X,Y,Year) + s(Observer) & 14.07 & 540.47 & 8.89 \\ 
+\bottomrule
+\end{tabular*}
+}
+\begin{flushleft}  \DIFaddFL{Model structures are described in the main text. The suffix
+`.obs' indicates a model that contained a random effect of observer.
+}\end{flushleft}
+\DIFaddendFL \end{adjustwidth}
+\end{table}%
+
+\begin{figure}
+
+\DIFdelbeginFL %DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \caption{\label{fig-modelACP}\textbf{\DIFaddFL{Partial effect of the spatial smooth for the Arctic Coastal Plain model M4.}} \newline{The map of density shows decreasing density further to the south or away from the coast. Black lines show contour lines of equal partial effect, and color shows increased (red) or decreased (blue) density relative to the intercept.}}
+\DIFaddendFL 
+
+\DIFdelbeginFL %DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-modelACP-1}%%%
+\DIFdelFL{Spatial smooth}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < \newline
+%DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-modelACP-2}%%%
+\DIFdelFL{Temporal effects}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \caption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-modelACP}%%%
+\DIFdelFL{Partial effect of (A) spatial smooth and
+(B) year random effects for the Arctic Coastal Plain model M3. The map
+of density (A) shows decreasing density further to the south or away
+from the coast.}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelendFL \end{figure}%
+
+Posterior simulations of the year-specific total across the whole ACP
+are shown in Fig~\ref{fig-yearACP} without a detection correction (\DIFaddbegin \DIFadd{Fig~\ref{fig-yearACP}}\DIFaddend A) and with a detection correction (\DIFaddbegin \DIFadd{Fig~\ref{fig-yearACP}}\DIFaddend B). The population appears to fluctuate in a similar manner as in the model fit to Triangle survey data, but the year-specific estimates for the ACP are much less precise. Because the best model contained only a simple random effect \DIFaddbegin \DIFadd{to model year }\DIFaddend and the survey was not completed in 2020 and 2021, predictions were not made for these years using this model. Such predictions could be made by simulating random effects for these years but this would simply give an estimate that spans the range of historical estimates because there is no temporal correlation in this model.
+
+\begin{figure}
+
+\DIFdelbeginFL %DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \caption{\label{fig-yearACP}\textbf{\DIFaddFL{Posterior estimates of Steller's eider across the Arctic Coastal Plain survey area, 2007-2024.}} \newline{(A) without accounting for detection and (B) after applying a detection correction. The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95\% credible interval.}}
+\DIFaddendFL 
+
+\DIFdelbeginFL %DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-acpA}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < \newline
+%DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-acpB}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \caption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-yearACP}%%%
+\DIFdelFL{Posterior estimates of Steller's eider in
+across the ACP survey area without accounting for detection (A) and
+after applying a detection correction (B). The black line is the
+posterior mean, the dashed black line is the posterior median, and the
+orange band is the 95\% credible interval.}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelendFL \end{figure}%
+
+Note that year-specific estimates of the total number of eiders across
+the ACP based on model \(M4\) (Fig~\DIFdelbegin \DIFdel{\ref{fig-acpA}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-yearACP}}\DIFaddend ) are less extreme than those based on design-based estimates (Fig~\ref{fig-design}B). That is, the model-based estimates are lower in high abundance years and higher
+in low abundance years compared to the design-based estimates. This is
+due to the `shrinkage' or regularization of the year random effect. In
+general, design-based estimates might over-estimate the eider population
+when one or more eiders happen to be observed on a transect in one year
+and under-estimate when one or more eiders are not observed on a
+transect, even though they are in the study area.
+
+Trends for the Steller's eider population across the ACP are shown in
+Fig~\ref{fig-trendACP}. For all time ranges (lags), the trend was not
+well estimated. For example, the 10-year trend posterior mean was 0.11
+(\DIFaddbegin \DIFadd{95\% }\DIFaddend CI: -0.03, 0.23), which could be a modest decrease to a very fast
+increase (cf., Fig~\DIFdelbegin \DIFdel{\ref{fig-acpB}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-yearACP}B}\DIFaddend ). For all time periods, the 95\%
+credible interval overlaps 0 and the upper bound was often
+\textgreater{} 0.15 (Fig~\ref{fig-trendACP}).
+
+\begin{figure}
+
+\caption{\label{fig-trendACP}\DIFdelbeginFL \DIFdelFL{Posterior trend estimates for Steller's
+eider in the Arctic Coastal Plain survey area, 2007-2024. The y axis is
+the log of the geometric mean growth rate, and the x axis is the
+lag-year trend, i.e., for lag 10 gives the 10-year trend from 2014 to
+2024. The black line is the posterior mean, the dashed black line is the
+posterior median, and the orange band is the 95\% credible interval. The
+horizontal thick black line is the y-axis origin.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Posterior trend estimates for Steller's eider in the Arctic Coastal Plain survey area, 2007-2024.}} \newline{The y axis is the log of the geometric mean growth rate, and the x axis is the lag-year trend, the lag of 10 gives the 10-year trend from 2014 to 2024. The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95\% credible interval. The horizontal thick black line is the y-axis origin.}\DIFaddendFL }
+
+\end{figure}%
+
+\subsection{Model-based Estimates: Triangle and ACP
+combined}\label{model-based-estimates-triangle-and-acp-combined}
+
+Partial effects of the model fit to combined data are shown in
+Fig~\ref{fig-mapComb}. This model contained a spatial smooth, a temporal
+smooth, and an effect of survey crew, but no spatio-temporal
+interaction. All p-values for the smooth terms were very small
+(\DIFdelbegin \DIFdel{\textless\textless{} }\DIFdelend \DIFaddbegin \DIFadd{< }\DIFaddend 0.001) and the survey crew effect p-value was
+0.05. Effective degrees of freedom for the spatial and temporal smooths
+were 19.2 and 12.8, respectively, indicating less shrinkage than the
+ACP-only model and similar to the Triangle model. Similar to the
+ACP-only model, eider density decreased from north to south and with
+distance from the coast (Fig~\DIFdelbegin \DIFdel{\ref{fig-combPart}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-mapComb}A}\DIFaddend ). Similar to the
+Triangle model, the temporal trend fluctuated with a 5-7 year period
+(Fig~\DIFdelbegin \DIFdel{\ref{fig-temp}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-mapComb}B}\DIFaddend ). The survey effect was estimated at 0.46 (SE =
+0.23) on the log scale. Because the Triangle survey was defined as the
+baseline (intercept), this means that the ACP crew observed
+approximately sixty percent higher density at the posterior mean on
+average as compared to the Triangle crew after controlling for year and
+spatial location (95\% CI: 1.7\% - 147\%). Spatial predictions on the
+response scale for 2013 are shown for the Triangle area in
+Fig~\DIFdelbegin \DIFdel{\ref{fig-combZoom}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-mapComb}C}\DIFaddend . Because there is no space-time interaction in
+the model, the relative density surface is a simple multiplicative
+relationship between all years as shown by the temporal partial effect
+(Fig~\DIFdelbegin \DIFdel{\ref{fig-temp}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-mapComb}B}\DIFaddend ).
+
+\begin{figure}
+
+\DIFdelbeginFL %DIFDELCMD < \begin{minipage}{0.50\linewidth}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \caption{\label{fig-mapComb}\textbf{\DIFaddFL{Partial effect plots for the best model fit to the combined Triangle and Arctic Coastal Plain data.}} \newline{Partial effect plots for (A) spatial and (B) temporal effects. There is no space-time interaction in this model. (C) spatial prediction of eider density in 2013 zoomed in to the Triangle area with no
+detection correction. Because there is no space-time interaction,
+relative densities are the same across years. Similarly, the detection
+correction does not vary across years or other covariates, so the relative
+surface does not change with or without a detection correction.}}
+\DIFaddendFL 
+
+\DIFdelbeginFL %DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-combPart}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIF < 
+%DIFDELCMD < \begin{minipage}{0.50\linewidth}
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-temp}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < \newline
+%DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-combZoom}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \caption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-mapComb}%%%
+\DIFdelFL{Partial effect plots for the spatial (A) and
+temporal (B) smooth from a GAM model fit to the Triangle and Arctic
+Coastal Plain data combined. There is no interaction in this model.
+Spatial prediction of eider density in 2013 zoomed in to the Triangle
+area (C). Shown in (C) is the the indicated breeding bird index (no
+detection correction). Because there is no space-time interaction,
+relative densities are the same across years. Similarly, the detection
+correction does not vary across years or other covariates, the relative
+surface does not change with or without a detection correction.}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelendFL \end{figure}%
+
+Posterior distributions for the year-specific population predictions
+over the entire ACP area are shown in Fig~\DIFdelbegin \DIFdel{\ref{fig-combA} }\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-yearComb}A }\DIFaddend without a
+detection correction and in Fig~\DIFdelbegin \DIFdel{\ref{fig-combB} }\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-yearComb}B }\DIFaddend after the detection
+correction is applied. Note that the predictions are made through
+1999-2006 and 2021 when ACP survey data does not exist and for 2020 when
+no data exists. This is possible because of the space-time structure of
+the model. For 2020, predictions are due to the temporal correlation
+(smooth) and interpolating from nearby years when data exists. In
+1999-2006 and 2021, the existing Triangle data is used to inform the
+temporal response, and then the temporally-constant spatial effect
+informs the prediction across space.
+
+\begin{figure}
+
+\DIFdelbeginFL %DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \caption{\label{fig-yearComb}\textbf{\DIFaddFL{Aunnual estimates of Steller's eider across the whole Arctic Coastal Plain, 1999-2024.}} \newline{Estimates are from the best model fit to the Arctic Coastal Plain and Triangle data combined. Posteriors are given (A) without accounting for detection and (B) after applying a detection correction. The black line is the posterior mean, the dashed black line is the posterior median, and the orange band is the 95\% credible interval.}}
+\DIFaddendFL 
+
+\DIFdelbeginFL %DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-combA}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < \newline
+%DIFDELCMD < \begin{minipage}{\linewidth}
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \subcaption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-combB}%%%
+}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < \end{minipage}%%%
+%DIF < 
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIFDELCMD < \caption{%
+{%DIFAUXCMD
+%DIFDELCMD < \label{fig-yearComb}%%%
+\DIFdelFL{Posterior estimates of Steller's eider in
+the ACP survey area with both Arctic Coastal Plain and Triangle data
+combined for model fitting. Posteriors are given without accounting for
+detection (A) and after applying a detection correction (B). The black
+line is the posterior mean, the dashed black line is the posterior
+median, and the orange band is the 95\% credible interval.}}
+%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelendFL \end{figure}%
+
+Posterior estimates of population trend show a strong increase over the
+most recent years and fluctuating trends as the time period increases
+(Fig~\ref{fig-trendComb}). The posterior estimate for the 10-year trend
+is -0.03 (-0.15, 0.06) and for the entire series the 25-year trend is
+-0.02 (-0.07, 0.02).
+
+\begin{figure}
+
+\caption{\label{fig-trendComb}\DIFdelbeginFL \DIFdelFL{Posterior trend estimates for Steller's
+eider in the ACP survey area using data from both the Triangle and ACP
+surveys, 1999-2024. The y axis is the log of the geometric mean growth
+rate, and the x axis is the lag-year trend, i.e., for lag 10 gives the
+10-year trend from 2014 to 2024. The black line is the posterior mean,
+the dashed black line is the posterior median, and the orange band is
+the 95\% credible interval. The horizontal thick black line is the
+y-axis origin.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Posterior trend estimates for Steller's
+eider on the Arctic Coastal Plain, 1999-2023.}} \newline{Estimates are from the best model fit using data from both the Triangle and Arctic Coastal Plain surveys. The y axis is the log of the geometric mean growth
+rate, and the x axis is the lag-year trend, the lag of 10 gives the 10-year trend from 2014 to 2024. The black line is the posterior mean,
+the dashed black line is the posterior median, and the orange band is
+the 95\% credible interval. The horizontal thick black line is the
+y-axis origin.}\DIFaddendFL }
+
+\end{figure}%
+
+\subsection{Wavelet analysis}\label{wavelet-analysis-1}
+
+A wavelet power spectrum clearly revealed a high \DIFdelbegin \DIFdel{``power '' }\DIFdelend \DIFaddbegin \DIFadd{power }\DIFaddend ridge across
+time that appears stationary with a period around 6 years
+(Fig~\ref{fig-wavelet}). Another ridge of much lower power appeared at a
+15 year period. When the \DIFdelbegin \DIFdel{spectorgram }\DIFdelend \DIFaddbegin \DIFadd{spectrogram }\DIFaddend power is averaged across all years
+the maximum power was found at period 6.53 (95\% CI: 5.46, 7.93). The
+lower power ridge gave a maximum average power at 15.26 years with a
+simulation pvalue of p = 0.07, suggesting \DIFdelbegin \DIFdel{very }\DIFdelend weak evidence for a
+longer period \DIFdelbegin \DIFdel{ocilation}\DIFdelend \DIFaddbegin \DIFadd{oscillation}\DIFaddend . When 500 posterior samples of the time series
+were sampled from the GAM and a spect\DIFaddbegin \DIFadd{r}\DIFaddend ogram found for each sample, the
+posterior \DIFaddbegin \DIFadd{mean }\DIFaddend maximum power was found at period \DIFdelbegin \DIFdel{(}\DIFdelend 6.52 \DIFdelbegin \DIFdel{) with credible
+interval (}\DIFdelend \DIFaddbegin \DIFadd{(95\% }\DIFaddend CI: 6.23, 6.76), suggesting very high confidence in maximum average power at this period across the range of posterior sample\DIFaddbegin \DIFadd{s}\DIFaddend  of the GAM.
+
+\begin{figure}
+
+\caption{\label{fig-wavelet}\DIFdelbeginFL \DIFdelFL{Wavelet power spectrum for Steller's eider
+across the ACP based on the posterior mean of the total population.
+Black points and lines give ridges where wavelet power is a local
+maximum. White lines give a 95\% confidence interval for the period.
+Larger power levels (red) correspond to greater probability density of
+the wave period. The `cone of influence' is shown by the slightly
+blurred area where boundary effects on estimating wave period are
+large.}\DIFdelendFL \DIFaddbeginFL \textbf{\DIFaddFL{Wavelet power spectrum for Steller's eider across the Arctic Coastal Plain.}} \newline{The power spectum was calculated at the posterior mean of the total population estimate.
+Black points and lines give ridges where wavelet power is a local
+maximum. White lines give a 95\% confidence interval for the period.
+Larger power levels (red) correspond to greater probability density of
+the wave period. The `cone of influence' is shown by the slightly
+blurred area where boundary effects on estimating wave period are
+large.}\DIFaddendFL }
+
+\end{figure}%
+
+Such periodic cycles will cause any estimate of trend to depend on the
+phase of the time points used for the calculation. Thus, when
+calculating trend, it might be useful to control for period so that
+start and end points reference the same relative position of the cycle.
+That is, when using the results presented here for trend, use
+approximate integer multiples of the period (e.g., 6.5, 13.0, \DIFdelbegin \DIFdel{19.6}\DIFdelend \DIFaddbegin \DIFadd{19.5}\DIFaddend , and
+so on) so that similar phases of the cycle are compared. For example, a
+19-year trend calculated from 2003 to 2022 \DIFaddbegin \DIFadd{(approximately trough to trough) }\DIFaddend gives a posterior mean of 0.03 (\DIFaddbegin \DIFadd{95\% }\DIFaddend CI: -0.01, 0.09).
+
+\section{Discussion}\label{discussion}
+
+Steller's eider numbers were estimated using generalized additive models
+and traditional design-based methods for two survey areas, and then
+using models after combining the two data sets. The Triangle data survey
+is a small subset of the ACP that contains most of the eiders and is
+sampled intensively; whereas, the ACP is a much larger area that covers
+additional areas where Steller's eider have been observed, such as the
+Teshekpuk area, but is sampled at a lower intensity. Because of the
+rarity of Steller's eider in all areas but the most northern area of the
+Triangle, design-based estimates are imprecise and the sampling process
+can cause increased variance and zero observations in some years. This
+is especially the case for the ACP survey where few or no Steller's
+eider exist in most sample strata. Model-based estimates can ameliorate
+some of these issues by using an explicit probability model for the
+sampling process and sharing information across years and space to
+smooth estimates. Such smoothing helps to remove sampling variation and
+detect the spatio-temporal population dynamics, such as the periodic
+cycles (Fig~\ref{fig-yearComb}), average spatial variation in density
+across time (Fig~\ref{fig-densityABR}), or dynamics in spatial density
+across time (Fig~\ref{fig-model}\DIFdelbegin \DIFdel{c}\DIFdelend \DIFaddbegin \DIFadd{C}\DIFaddend ).
+
+Which results should one use? This depends on the purpose. If one is
+simply interested in comparing survey results across years, then the
+design-based estimate can help make rough assessments of changes in the
+underlying population by comparing estimates and confidence intervals
+across years. These calculations can also be useful for assessing design
+properties of the surveys, such as sampling effort and power and are
+very simple to do. While detection corrections can be applied to
+design-based estimates, interpreting years of zero observations is
+problematic, as no detection correction can be made in these years
+without specifying a probability model that explicitly allows for zero
+observation when animal are present. If one is interested in population
+size, population\DIFdelbegin \DIFdel{s}\DIFdelend  trends, or variation in density across space, then
+some form of probability model that includes ``regularization'' of
+estimates should be used. While other models can be used, the GAMs
+presented here are easily applied, seem to describe the data well, and
+have all of the advantages discussed above. They are also commonly
+applied for trend estimation (e.g. \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{amundson2019}}\hskip0pt%DIFAUXCMD
+,
+\mbox{%DIFAUXCMD
+\citep{rosenberg2019decline}}\hskip0pt%DIFAUXCMD
+, \mbox{%DIFAUXCMD
+\citep{smith2021north}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{amundson2019, rosenberg2019decline, smith2021north}}\hskip0pt%DIFAUXCMD
+}\DIFaddend ). Another advantage of the linear models used here (GAMs) is that interpretation and understanding is straightforward, where effects can be partitioned out into time, space, and space-by-time interaction effects (e.g.,
+Fig~\ref{fig-model}).
+
+For inference in the Triangle area, results from the models fit to the
+Triangle-only data are best. This is for several reasons. First,
+sampling intensity is high and consistent across space. This affects the
+amount of smoothing that the GAM will select. Under sparse sampling, a
+smoother surface will result, all else being equal (i.e., the true
+wiggliness of the density surface). Compared to results in the Triangle
+area from the combined model, the smooth of the density surface will
+reflect the average properties across the whole ACP and this will result
+in over-smoothing the Triangle area. This can be seen by comparing
+Fig~\ref{fig-densityABR} to Fig~\DIFdelbegin \DIFdel{\ref{fig-combZoom}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-mapComb}C}\DIFaddend . In addition, the
+high sampling intensity across a relatively long time period has allowed
+the estimation of a simple space-time interaction effect in the Triangle
+area where density is increasing in the north and decreasing in the
+south through time (Fig~\DIFdelbegin \DIFdel{\ref{fig-model-3}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-model}C}\DIFaddend ). The model also estimates the
+temporal effect well with much better precision than the design-based
+estimates (compare Fig~\DIFdelbegin \DIFdel{\ref{fig-abrA} }\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-model}B }\DIFaddend to Fig~\ref{fig-design}\DIFdelbegin \DIFdel{a}\DIFdelend \DIFaddbegin \DIFadd{A}\DIFaddend ).
+
+For inference outside the Triangle or the ACP as a whole, the model
+using the combined data sets is best because design-based estimates
+using only the ACP data are extremely imprecise for the Steller's eider
+(Fig~\ref{fig-design}\DIFdelbegin \DIFdel{b}\DIFdelend \DIFaddbegin \DIFadd{B}\DIFaddend ) and even model-based estimates, while much
+better, are not precise (Fig~\ref{fig-yearACP}) compared to results from
+the combined data. Thus, combining data sets allow\DIFaddbegin \DIFadd{s}\DIFaddend  the Triangle data to
+inform the temporal estimate, while the ACP data allows estimation of
+density outside the Triangle area. Comparing Fig~\ref{fig-yearABR} to
+Fig~\DIFdelbegin \DIFdel{\ref{fig-yearACP} shows that relatively few eiders are }\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-yearComb} shows that nearly half the population might be found }\DIFaddend outside the Triangle area in \DIFdelbegin \DIFdel{most years, even though there are observations outside
+the Triangle in some years(Fig~\ref{fig-observations})}\DIFdelend \DIFaddbegin \DIFadd{some years}\DIFaddend . Because the
+space-time interaction of the Triangle-only model shows a decreasing
+trend in the south (Fig~\DIFdelbegin \DIFdel{\ref{fig-model-3}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig-model}C}\DIFaddend ), there may be fewer eiders
+outside the Triangle in recent years than there were in earlier years.
+In any case, including the ACP survey data allows estimation of eider
+density in the Teshekpuk and other areas of the ACP. If the ACP data is
+not available, however, then survey effort in the Triangle area only is
+likely sufficient to monitor abundance and trends of the population,
+given the current distribution.
+
+The model and approach used here is similar to that of \DIFaddbegin \DIFadd{Amundson et al. 
+}\DIFaddend \citep{amundson2019}, with two important simplifications. First, the
+time series for the ACP data was restricted to 2007 through 2024. This
+allows a much simpler model because adjusting for survey timing
+differences pre-2007 is not necessary. Thus, the phenology covariates
+used in \citep{amundson2019} are not included or necessary in the models
+used here. Second, restricted maximum likelihood as implemented in
+\texttt{mgcv} \citep{wood2011fast} was used instead of direct Bayesian
+simulations (Markov chain Monte Carlo). This is much easier from a
+development and computational time perspective, making the current
+approach easy to apply without custom coding in Bayesian software.
+Instead, these models can be applied in R using more familiar linear
+model syntax, the model fitting algorithm is much faster than direct
+Bayesian simulations, and results are easier to assess. Another
+difference is that the current effort estimated observer effects, which
+were not in \citep{amundson2019}, and incorporated a detection estimate.
+While the observer effects contributed nothing for the Steller's eider
+(Table~\ref{tbl-modelsACP}), they have for other species of waterbirds
+in separate analyses \citep{wilson2025population} or other systems
+\DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{sauer1994observer} }\hskip0pt%DIFAUXCMD
+\mbox{%DIFAUXCMD
+\citep{fink2023double}}\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{sauer1994observer, fink2023double}}\hskip0pt%DIFAUXCMD
+}\DIFaddend . Therefore, observer
+effects are probably also important for the Steller's eider but simply
+cannot be justified based on parsimony inherent in AIC model selection
+criteria. The effect of ``Survey'' in the combined analysis is curious.
+This suggests a strong effect of observer if there are not large
+differences in protocol, which there are not, or in implementation
+between the surveys. This effect deserves more investigation. In any
+case, for population estimates, predictions were made setting the survey
+parameter to the Triangle (the intercept) because this is the survey
+area for which detection was estimated. Because there are so few
+observations of Steller's eider on the ACP survey, however, this effect
+may not be estimated well and deserves more investigation. One solution
+might be to sample the Triangle area with higher intensity during the
+ACP survey.
+
+One interesting comparison to \DIFaddbegin \DIFadd{Amundson et al. }\DIFaddend \citep{amundson2019} is that they found very linear time trends for Steller's eider. This was also the case here when models included a spatio-temporal interaction and were fit to ACP-only data (model M2, Table~\ref{tbl-modelsACP}, results in
+\nameref{s5-results}). This model, however, was not well-supported
+compared to simpler models (Table~\ref{tbl-modelsACP}). When fit to data
+that combined ACP and Triangle data, the model with a spatio-temporal
+interaction was well-supported but was not used here because it gave
+widely unbelievable predictions from 1999 to 2006. I attributed this to
+the spatio-temporal mismatch in data sets during this period and a
+spatio-temporal mismatch in sampling intensity. This was not a problem
+in the data of \citep{amundson2019}, but they did not fit simpler models
+without a space-time interaction. Because the simpler model without a
+space-time interaction reported here produced reasonable predictions and
+all other data sets produced similar cyclic temporal patterns, I believe
+the simpler model with temporal and spatial effects is a more
+appropriate model when data sets are combined, and the results of
+\citep{amundson2019} are simply due to a lack of power to detect
+anything other than linear smooths of year in their more complex model.
+In any case, a perfectly linear (on the log scale) temporal trend is
+hard to believe and most likely represents a modelling artifact of this
+more complex model when confronted with sparse or mis\DIFdelbegin \DIFdel{s-}\DIFdelend matched data in
+time and space.
+
+\section{Conclusion}\label{conclusion}
+
+Steller's eider populations on the ACP, including the Triangle area, are
+clearly undergoing cyclical patterns of abundance with a period of about
+6.5 years (Fig~\ref{fig-yearABR}, Fig~\ref{fig-yearComb},
+Fig~\ref{fig-wavelet}). While it has been hypothesized that this is due
+to lemming cycles \citep{quakenbush2004breeding}, this effort cannot
+determine the cause of the cycles. Lemmings tend to cycle with a shorter
+period, closer to 3-6 years with a median period around the arctic of
+3.7 years \citep{gauthier2024taking}. The cycle near the Triangle survey
+is somewhat unclear from historical data \citep{pitelka2018demography},
+so unless the lemming period is \(\ge\) 5.5 years, the estimate of
+periodicity presented here does not support a simple concordance between
+eider and lemmings or their predators. It is clear that eider cycles
+exist and that the population has been fluctuating around stable cycles
+for at least 25 years \DIFaddbegin \DIFadd{(Fig~\ref{fig-wavelet})}\DIFaddend . Thus, any measure of trend will show an increasing, decreasing, or stable estimate depending on the beginning and ending points for the trend calculation (Fig~\ref{fig-trendABR}, Fig~\ref{fig-trendComb}). Recovery criteria and species status
+assessments should incorporate this understanding into trend
+determinations. Attention should be given to the start and end points
+for trends so that similar points in the cycle are used (\DIFaddbegin \DIFadd{integer }\DIFaddend multiples of approximately 6.5). While each cycle is a stochastic realization that
+will not follow exactly the same period, care should be taken when
+interpreting estimates of trend. For example, a 10-year trend from 2013
+to 2023 would show a large and significant decrease simply due to the
+cycle phase; whereas, 2009 to 2019 would show a large increase. Instead,
+the population seems to be undergoing fairly stable cycles of constant
+period\DIFdelbegin \DIFdel{but perhaps varying amplitude}\DIFdelend .
+
+The detection estimate used here (0.307, SD = 0.092) is substantially
+lower and more variable than used in the Species Status Assessment of
+2019 (0.43, SD = 0.028, \citep{steiSSA2019}), which was based on
+estimates for long-tailed duck \DIFaddbegin \DIFadd{(}\emph{\DIFadd{Clangula hyemalis}}\DIFadd{) }\DIFaddend and did not account for non-detection by both observers (a `00' capture history). Analyses previous to 2019 (\DIFdelbegin \DIFdel{Bob
+Stehn}\DIFdelend \DIFaddbegin \DIFadd{USFWS}\DIFaddend , unpublished) used a point estimate of 0.3 (SD = 0) based on expert judgement, which is remarkably close to the mean estimate used here, but did not include any uncertainty. Dunham and Grand \citep{dunham2017evaluating} used the same point estimate and allowed for some uncertainty (SD = 0.02). Therefore, the posterior mean
+population estimates reported here will be higher and skewed toward
+larger values than past estimates. Better estimates of detection could
+have large effects on the population estimates. Until such estimates are
+available and population estimates are updated, the current estimates
+should be treated as the best available, and the approach used here
+seems a reasonable way to incorporate prior (or posterior) distributions
+of detection into population estimates.
+
+\section{Acknowledgements}\label{acknowledgements}
+
+Comments from Annie Maliguine, John Nash, Dave Safine, Julian Fischer,
+Amy Pocewicz, and Chuck Frost improved the manuscript. Cat Bradley
+designed and analyized the initial years of the detection experiment.
+Tim Obritschkewitsch (ABR, Inc.) provided data, including improvements
+in data over that available in 2019, and helped to interpret data so
+that it could be used in this analysis. The findings and conclusions in
+this article are those of the author and do not necessarily represent
+the views of the U.S. Fish and Wildlife Service.
+
+\begin{thebibliography}{10}
+
+\bibitem{obritschkewitsch2008steller}
+Obritschkewitsch T, Ritchie RJ, King JG.
+\newblock Steller's Eider Survey Near Barrow, Alaska, 2008.
+\newblock ABR, Incorporated--Environmental Research and Services; 2008.
+\newblock Available from: \url{https://catalog.epscor.alaska.edu/dataset/77d0ac11-90a2-4211-9183-237ec41b919d/resource/8ed2c5f0-1997-4701-983f-d9c221b97741/download/2008-barrow-stellers-eider-survey_final.pdf}.
+
+\bibitem{wilson2025population}
+Wilson HM, Safine DE, Frost CJ, Osnas EE.
+\newblock Population indices, trends, and distribution of breeding waterbirds on the arctic coastal plain, Alaska, 2007-2024. 2025.
+\newblock \href {http://dx.doi.org/https://doi.org/10.7944/dqf4-2z27} {doi:https://doi.org/10.7944/dqf4-2z27}.
+
+\bibitem{quakenbush2004breeding}
+Quakenbush L, Suydam R, Obritschkewitsch T, Deering M.
+\newblock Breeding biology of Steller's eiders (Polysticta stelleri) near Barrow, Alaska, 1991-99.
+\newblock Arctic. 2004:166-82.
+
+\bibitem{dunham2017evaluating}
+Dunham K, Grand JB.
+\newblock Evaluating models of population process in a threatened population of Steller's eiders: a retrospective approach.
+\newblock Ecosphere. 2017;8(3):e01720.
+
+\bibitem{miller2013}
+Miller DL, Burt ML, Rexstad EA, Thomas L.
+\newblock Spatial models for distance sampling data: recent developments and future directions.
+\newblock Methods in Ecology and Evolution. 2013;4(11):1001-10.
+
+\bibitem{amundson2019}
+Amundson CL, Flint PL, Stehn RA, Platte RM, Wilson HM, Larned WW, et~al.
+\newblock Spatio-temporal population change of Arctic-breeding waterbirds on the Arctic Coastal Plain of Alaska.
+\newblock Avian Conservation \& Ecology. 2019;14(1).
+
+\bibitem{hastie1986generalized}
+Hastie T, Tibshirani R.
+\newblock Generalized additive models.
+\newblock Statistical science. 1986;1(3):297-310.
+
+\bibitem{wood2017}
+Wood SN.
+\newblock Generalized Additive Models: An Introduction with R, Second Edition.
+\newblock Boca Raton, Florida: Chapman and Hall/CRC; 2017.
+
+\bibitem{sauer2002hierarchical}
+Sauer JR, Link WA.
+\newblock Hierarchical modeling of population stability and species group attributes from survey data.
+\newblock Ecology. 2002;83(6):1743-51.
+
+\bibitem{rosenberg2019decline}
+Rosenberg KV, Dokter AM, Blancher PJ, Sauer JR, Smith AC, Smith PA, et~al.
+\newblock Decline of the North American avifauna.
+\newblock Science. 2019;366(6461):120-4.
+
+\bibitem{smith2021north}
+Smith AC, Edwards BP.
+\newblock North American Breeding Bird Survey status and trend estimates to inform a wide range of conservation needs, using a flexible Bayesian hierarchical generalized additive model.
+\newblock The Condor. 2021;123(1):duaa065.
+
+\bibitem{BDA3}
+Gelman A, Carlin JB, Stern HS, Dunson DB, Vehtari A, Rubin DB.
+\newblock Bayesian data analysis.
+\newblock CRC press; 2014.
+
+\bibitem{hooten2015guide}
+Hooten MB, Hobbs NT.
+\newblock A guide to Bayesian model selection for ecologists.
+\newblock Ecological monographs. 2015;85(1):3-28.
+
+\bibitem{efron1977stein}
+Efron B, Morris C.
+\newblock Stein's paradox in statistics.
+\newblock Scientific American. 1977;236(5):119-27.
+
+\bibitem{kery2015applied}
+K{\'e}ry M, Royle JA.
+\newblock Applied Hierarchical Modeling in Ecology: Analysis of distribution, abundance and species richness in R and BUGS: Volume 1: Prelude and Static Models.
+\newblock Academic Press; 2015.
+
+\bibitem{kery2020applied}
+K{\'e}ry M, Royle JA.
+\newblock Applied Hierarchical Modeling in Ecology: Analysis of distribution, abundance and species richness in R and BUGS: Volume 2: dynamic and advanced models.
+\newblock Academic Press; 2020.
+
+\bibitem{osnas-github}
+Osnas EE. ACP-Mapping. GitHub; 2024.
+\newblock \url{https://github.com/USFWS/ACP-Mapping}.
+
+\bibitem{osnasACP}
+Osnas EE. Arctic Coastal Plain Waterfowl and Waterbird Spatial and Temporal Trends.. U.S. Fish and Wildlife Service, Alaska Region, Migratory Bird Management Alaska; 2024.
+\newblock \url{https://doi.org/10.7944/qtgn-y170}.
+
+\bibitem{triangleABR}
+Obritschkewitsch T, Bankert AR.
+\newblock Steller's Eider surveys near Utqiaġvik, Alaska, 2023; 2024.
+
+\bibitem{cws1987}
+USFWS, CWS.
+\newblock Standard Operating Procedures for Aerial Waterfowl Breeding and Ground Population and Habitat Surveys in North America; 1987.
+
+\bibitem{r-base}
+{R Core Team}. R: A Language and Environment for Statistical Computing. Vienna, Austria; 2024.
+\newblock Available from: \url{https://www.R-project.org/}.
+
+\bibitem{RStudio2024}
+{Posit team}. RStudio: Integrated Development Environment for R; 2024.
+\newblock Available from: \url{http://www.posit.co/}.
+
+\bibitem{tidyverse}
+Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, et~al.
+\newblock Welcome to the {tidyverse}.
+\newblock Journal of Open Source Software. 2019;4(43):1686.
+\newblock \href {http://dx.doi.org/10.21105/joss.01686} {doi:10.21105/joss.01686}.
+
+\bibitem{fewster2009}
+Fewster RM, Buckland ST, Burnham KP, Borchers DL, Jupp PE, Laake JL, et~al.
+\newblock Estimating the encounter rate variance in distance sampling.
+\newblock Biometrics. 2009;65(1):225-36.
+
+\bibitem{buckland2001}
+Buckland ST, Anderson DR, Burnham KP, Laake JL, Borchers DL, Thomas L, et~al.
+\newblock Introduction to distance sampling: estimating abundance of biological populations.
+\newblock Oxford (United Kingdom) Oxford Univ. Press; 2001.
+
+\bibitem{cochran1977}
+Cochran WG.
+\newblock Sampling Techniques.
+\newblock New York, New York: John Wiley and Sons; 1977.
+
+\bibitem{williams2002}
+Williams BK, Nichols JD, Conroy MJ.
+\newblock Analysis and Management of Animal Populations.
+\newblock New York, New York: Academic Press; 2002.
+
+\bibitem{thompson2012}
+Thompson SK.
+\newblock Sampling.
+\newblock Hoboken, New Jersey: John Wiley and Sons; 2012.
+
+\bibitem{pedersen2019hierarchical}
+Pedersen EJ, Miller DL, Simpson GL, Ross N.
+\newblock Hierarchical generalized additive models in ecology: an introduction with mgcv.
+\newblock PeerJ. 2019;7:e6876.
+
+\bibitem{hefley2017basis}
+Hefley TJ, Broms KM, Brost BM, Buderman FE, Kay SL, Scharf HR, et~al.
+\newblock The basis function approach for modeling autocorrelation in ecological data.
+\newblock Ecology. 2017;98(3):632-46.
+
+\bibitem{hollmen2023climate}
+Hollmen TE, Flint PL, Ulman SE, Wilson HM, Amundson CL, Osnas EE.
+\newblock Climate change and coastal wetland salinization: Physiological and ecological consequences for Arctic waterfowl.
+\newblock Functional Ecology. 2023;37(7):1884-96.
+
+\bibitem{sf}
+Pebesma E.
+\newblock {Simple Features for R: Standardized Support for Spatial Vector Data}.
+\newblock {The R Journal}. 2018;10(1):439-46.
+\newblock Available from: \url{https://doi.org/10.32614/RJ-2018-009}. \href {http://dx.doi.org/10.32614/RJ-2018-009} {doi:10.32614/RJ-2018-009}.
+
+\bibitem{r-mgcv}
+Wood SN. mgcv: Mixed GAM Computation Vehicle with Automatic Smoothness Estimation; 2021.
+\newblock R package version 1.8-36.
+\newblock Available from: \url{https://CRAN.R-project.org/package=mgcv}.
+
+\bibitem{DHARMa}
+Hartig F. DHARMa: Residual Diagnostics for Hierarchical (Multi-Level / Mixed) Regression Models; 2022.
+\newblock R package version 0.4.6.
+\newblock Available from: \url{https://CRAN.R-project.org/package=DHARMa}.
+
+\bibitem{r-gratia}
+Simpson GL. {gratia}: Graceful {ggplot}-Based Graphics and Other Functions for {GAM}s Fitted using {mgcv}; 2023.
+\newblock R package version 0.8.1.
+\newblock Available from: \url{https://gavinsimpson.github.io/gratia/}.
+
+\bibitem{miller2025bayesian}
+Miller DL.
+\newblock Bayesian views of generalized additive modelling.
+\newblock Methods in Ecology and Evolution. 2025;16(3):446-55.
+
+\bibitem{gratiaPost}
+Simpson GL. {gratia}: Posterior simulation; 2024.
+\newblock Version 0.9.2.9011.
+\newblock Available from: \url{https://gavinsimpson.github.io/gratia/articles/posterior-simulation.html}.
+
+\bibitem{steiSSA2025}
+{U S  Fish and Wildlife Service}.
+\newblock Status assessment of the {Alaska-breeding} population of {Steller’s Eiders}.
+\newblock Fairbanks, {AK}: Fairbanks Fish and Wildlife Field Office; 2025. Version 2.
+\newblock Available from: \url{https://iris.fws.gov/APPS/ServCat/DownloadFile/275532}.
+
+\bibitem{cazelles2008wavelet}
+Cazelles B, Chavez M, Berteaux D, M{\'e}nard F, Vik JO, Jenouvrier S, et~al.
+\newblock Wavelet analysis of ecological time series.
+\newblock Oecologia. 2008;156(2):287-304.
+
+\bibitem{r-wavelet}
+Roesch A, Schmidbauer H. {WaveletComp}: Computational Wavelet Analysis; 2018.
+\newblock R package version 1.1.
+\newblock Available from: \url{https://CRAN.R-project.org/package=WaveletComp}.
+
+\bibitem{wood2011fast}
+Wood SN.
+\newblock Fast stable restricted maximum likelihood and marginal likelihood estimation of semiparametric generalized linear models.
+\newblock Journal of the Royal Statistical Society Series B: Statistical Methodology. 2011;73(1):3-36.
+
+\bibitem{sauer1994observer}
+Sauer JR, Peterjohn BG, Link WA.
+\newblock Observer differences in the North American breeding bird survey.
+\newblock The Auk. 1994;111(1):50-62.
+
+\bibitem{fink2023double}
+Fink D, Johnston A, Strimas-Mackey M, Auer T, Hochachka WM, Ligocki S, et~al.
+\newblock A double machine learning trend model for citizen science data.
+\newblock Methods in Ecology and Evolution. 2023;14(9):2435-48.
+
+\bibitem{gauthier2024taking}
+Gauthier G, Ehrich D, Belke-Brea M, Domine F, Alisauskas R, Clark K, et~al.
+\newblock Taking the beat of the Arctic: are lemming population cycles changing due to winter climate?
+\newblock Proceedings of the Royal Society B. 2024;291(2016):20232361.
+
+\bibitem{pitelka2018demography}
+Pitelka FA, Batzli GO.
+\newblock Demography and condition of brown lemmings (Lemmus trimucronatus) during cyclic density fluctuations near Barrow, Alaska.
+\newblock In: Annales Zoologici Fennici. vol.~55. BioOne; 2018. p. 187-236.
+
+\bibitem{steiSSA2019}
+{U S  Fish and Wildlife Service}.
+\newblock Status assessment of the {Alaska-breeding} population of {Steller’s Eiders}.
+\newblock Fairbanks, {AK}: Fairbanks Fish and Wildlife Field Office; 2019. Version 1.
+\newblock Available from: \url{https://iris.fws.gov/APPS/ServCat/DownloadFile/163633}.
+
+\end{thebibliography}
+
+
+\section{Supporting information}\label{supporting-information}
+
+\paragraph*{S1 ACP Data}
+\label{s1-acpdata}
+{\textbf{ACP data used in these analyses.\DIFdelbegin \DIFdel{The data can be found at
+}%DIFDELCMD < \url{https://doi.org/10.7944/qtgn-y170} %%%
+\DIFdel{\mbox{%DIFAUXCMD
+\citep{osnasACP}}\hskip0pt%DIFAUXCMD
+.}\DIFdelend } \DIFaddbegin \DIFadd{The data can be found at
+}\url{https://doi.org/10.7944/qtgn-y170} \DIFadd{\mbox{%DIFAUXCMD
+\citep{osnasACP}}\hskip0pt%DIFAUXCMD
+.}\DIFaddend }
+
+\paragraph*{S2 Triangle Data}
+\label{s2-tridata}
+{\textbf{Triangle data used for this report.\DIFdelbegin \DIFdel{The data is maintained by
+the author and is available at
+}%DIFDELCMD < \url{https://www.sciencebase.gov/catalog/item/6761f392d34e9734dd458940}%%%
+\DIFdel{.
+The Triangle data used in this report was obtained from ABR, Inc.~}\DIFdelend } \DIFaddbegin \DIFadd{The data is maintained by
+the author and is available at
+}\url{https://doi.org/10.7944/0x1v-4b77}\DIFadd{.
+The Triangle data used in this report was obtained from ABR, Inc.~}\DIFaddend }
+
+\paragraph*{S3 R Code}
+\label{s3-code}
+{\textbf{R code to reproduce these analyses, results, and this report.\DIFdelbegin \DIFdel{All code can be found at the GitHub repository,
+}\DIFdelend \DIFaddbegin }
+\DIFadd{All code can be found at the GitHub repository,
+}\DIFaddend \url{https://github.com/USFWS/STEI-estimates}.\DIFdelbegin %DIFDELCMD < \MBLOCKRIGHTBRACE%%%
+\DIFdelend }
+
+\paragraph*{S4 \DIFdelbegin \DIFdel{Detection}\DIFdelend \DIFaddbegin \DIFadd{Table 3}\DIFaddend }
+\label{s4-bradley}
+{\textbf{\DIFdelbegin \DIFdel{A description of the field experiment and analysis to estimate
+detection in }\DIFdelend \DIFaddbegin \DIFadd{Detection estimates by distance from transect.}} \DIFadd{This is an unpublished USFWS report that describes the field experiment and analysis to estimate detection probabilty of Steller's eider by an aerial observer in }\DIFaddend 2017 and 2018. \DIFdelbegin %DIFDELCMD < \MBLOCKRIGHTBRACE%%%
+\DIFdelend \DIFaddbegin \DIFadd{Table 3 is used to calculate the detection probability averaged over distance.}\DIFaddend }
+
+\paragraph*{S5 Results}
+\label{s5-results}
+{\textbf{R model objects, posteriors samples, figures, and csv files
+summarizing various posteriors.\DIFdelbegin \DIFdel{All objects can be found at
+}%DIFDELCMD < \url{https://www.sciencebase.gov/catalog/item/6761f393d34e9734dd458942}%%%
+\DIFdel{.}\DIFdelend } \DIFaddbegin \DIFadd{All objects can be found at
+}\url{https://doi.org/10.7944/22x5-t856}\DIFadd{.}\DIFaddend }
+
+
+\nolinenumbers
+
+
+\end{document}

@@ -110,8 +110,10 @@ ak = tm_shape(spData::alaska) + tm_polygons(fill = "white") +
                                       position = tm_pos_in(0.5, 0.1))
 #below from from https://r.geocompx.org/adv-map
 library(grid)
+#tiff("Fig1.tif")
 survey.area
 print(ak, vp = grid::viewport(0.85, 0.3, width = 0.3, height = 0.3))
+#dev.off()
 tmap_save(survey.area, filename = "Figures/Fig1.eps",
           insets_tm = ak, insets_vp = grid::viewport(0.7, 0.25, width = 0.35, 
                                                      height = 0.35))
